@@ -51,23 +51,24 @@ const UserCrud = () => {
         loadLazyData();
     }, [lazyParams]);
 
-    const loadLazyData = () => {
+    const loadLazyData = async () => {
         setLoading(true);
-        UserApi.getUsers({
-            page: lazyParams.page,
-            per_page: lazyParams.rows,
-            sort_field: lazyParams.sortField,
-            sort_order: lazyParams.sortOrder,
-            search: globalFilter
-        }).then(response => {
+        try {
+            const response = await UserApi.getUsers({
+                page: lazyParams.page,
+                per_page: lazyParams.rows,
+                sort_field: lazyParams.sortField,
+                sort_order: lazyParams.sortOrder,
+                search: globalFilter
+            });
             setUsers(response.data.data);
             setTotalRecords(response.data.total);
             setLoading(false);
-        }).catch(error => {
+        } catch (error) {
             console.error('Error loading users:', error);
             setLoading(false);
             toast.current.show({ severity: 'error', summary: 'Error', detail: 'Failed to load users', life: 3000 });
-        });
+        }
     };
 
     const openNew = () => {
@@ -122,18 +123,17 @@ const UserCrud = () => {
         setDeleteUserDialog(true);
     };
 
-    const deleteUser = () => {
-        UserApi.deleteUser(user.id)
-            .then(() => {
-                loadLazyData();
-                setDeleteUserDialog(false);
-                setUser(emptyUser);
-                toast.current.show({ severity: 'success', summary: 'Successful', detail: 'User Deleted', life: 3000 });
-            })
-            .catch(error => {
-                console.error('Error deleting user:', error);
-                toast.current.show({ severity: 'error', summary: 'Error', detail: 'Failed to delete user', life: 3000 });
-            });
+    const deleteUser = async () => {
+        try {
+            await UserApi.deleteUser(user.id);
+            loadLazyData();
+            setDeleteUserDialog(false);
+            setUser(emptyUser);
+            toast.current.show({ severity: 'success', summary: 'Successful', detail: 'User Deleted', life: 3000 });
+        } catch (error) {
+            console.error('Error deleting user:', error);
+            toast.current.show({ severity: 'error', summary: 'Error', detail: 'Failed to delete user', life: 3000 });
+        }
     };
 
     const exportCSV = () => {
@@ -144,18 +144,17 @@ const UserCrud = () => {
         setDeleteUsersDialog(true);
     };
 
-    const deleteSelectedUsers = () => {
-        UserApi.deleteMultipleUsers(selectedUsers.map(user => user.id))
-            .then(() => {
-                loadLazyData();
-                setDeleteUsersDialog(false);
-                setSelectedUsers(null);
-                toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Users Deleted', life: 3000 });
-            })
-            .catch(error => {
-                console.error('Error deleting multiple users:', error);
-                toast.current.show({ severity: 'error', summary: 'Error', detail: 'Failed to delete users', life: 3000 });
-            });
+    const deleteSelectedUsers = async () => {
+        try {
+            await UserApi.deleteMultipleUsers(selectedUsers.map(user => user.id));
+            loadLazyData();
+            setDeleteUsersDialog(false);
+            setSelectedUsers(null);
+            toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Users Deleted', life: 3000 });
+        } catch (error) {
+            console.error('Error deleting multiple users:', error);
+            toast.current.show({ severity: 'error', summary: 'Error', detail: 'Failed to delete users', life: 3000 });
+        }
     };
 
     const onInputChange = (e, name) => {
