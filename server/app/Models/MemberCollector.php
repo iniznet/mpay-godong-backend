@@ -5,18 +5,18 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class CustomerCollector extends Model
+class MemberCollector extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'user_id',
+        'member_id',
         'collector_id',
     ];
 
-    public function user()
+    public function member_id()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Member::class);
     }
 
     public function collector()

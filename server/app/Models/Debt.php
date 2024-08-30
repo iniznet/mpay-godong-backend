@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\DebtStatusEnum;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -11,15 +12,25 @@ class Debt extends Model
 
     protected $fillable = [
         'reference',
-        'user_id',
+        'member_id',
         'amount',
         'interest_rate',
+        'months',
         'status',
         'notes',
     ];
 
-    public function user()
+    protected $casts = [
+        'status' => DebtStatusEnum::class,
+    ];
+
+    public function member()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Member::class);
+    }
+
+    public function installments()
+    {
+        return $this->hasMany(Installment::class);
     }
 }

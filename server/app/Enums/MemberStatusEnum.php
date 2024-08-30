@@ -2,9 +2,10 @@
 
 namespace App\Enums;
 
-enum BalanceStatusEnum: string
+enum MemberStatusEnum: string
 {
     case PENDING = 'pending';
     case ACTIVE = 'active';
     case INACTIVE = 'inactive';
+    case SUSPENDED = 'suspended';
 }

@@ -24,8 +24,6 @@ class DatabaseSeeder extends Seeder
             DepositSeeder::class,
             WithdrawalSeeder::class,
             DebtSeeder::class,
-            InstallmentSeeder::class,
-            UserAddressSeeder::class,
         ]);
     }
 }

@@ -10,7 +10,7 @@ class Balance extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id',
+        'member_id',
         'amount',
         'status',
     ];

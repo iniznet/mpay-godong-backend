@@ -16,7 +16,7 @@ return new class extends Migration
             $table->id();
             $table->string('reference')->unique();
             $table->foreignId('balance_id')->constrained()->onDelete('cascade');
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('member_id')->constrained()->onDelete('cascade');
             $table->decimal('amount', 19, 2);
             $table->string('status')->default(TransactionStatusEnum::PENDING->value);
             $table->foreignId('collector_id')->nullable()->constrained('users')->nullOnDelete();

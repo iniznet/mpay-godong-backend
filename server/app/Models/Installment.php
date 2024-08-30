@@ -13,7 +13,10 @@ class Installment extends Model
     protected $fillable = [
         'reference',
         'debt_id',
-        'amount',
+        'principal',
+        'interest',
+        'remaining',
+        'month',
         'due_date',
         'paid_at',
         'notes',

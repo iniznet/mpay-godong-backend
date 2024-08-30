@@ -3,47 +3,47 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\User;
-use App\Http\Requests\UserRequest;
+use App\Models\Member;
+use App\Http\Requests\MemberRequest;
 use Illuminate\Support\Facades\Hash;
 
-class UserController extends Controller
+class MemberController extends Controller
 {
     public function index(Request $request)
     {
-        $query = User::query();
+        $query = Member::query();
 
         if ($request->has('search')) {
             $searchTerm = $request->search;
             $query->where(function ($q) use ($searchTerm) {
                 $q->where('name', 'like', "%{$searchTerm}%")
                     ->orWhere('email', 'like', "%{$searchTerm}%")
-                    ->orWhere('role', 'like', "%{$searchTerm}%");
+                    ->orWhere('phone', 'like', "%{$searchTerm}%");
             });
         }
 
         $perPage = $request->input('per_page', 10);
-        $users = $perPage != -1 ? $query->paginate($perPage) : $query->get();
+        $members = $perPage != -1 ? $query->paginate($perPage) : $query->get();
 
-        return response()->json($users);
+        return response()->json($members);
     }
 
-    public function store(UserRequest $request)
+    public function store(MemberRequest $request)
     {
         $validatedData = $request->validated();
         $validatedData['password'] = Hash::make($validatedData['password']);
 
-        $user = User::create($validatedData);
+        $member = Member::create($validatedData);
 
-        return response()->json($user, 201);
+        return response()->json($member, 201);
     }
 
-    public function show(User $user)
+    public function show(Member $member)
     {
-        return response()->json($user);
+        return response()->json($member);
     }
 
-    public function update(UserRequest $request, User $user)
+    public function update(MemberRequest $request, Member $member)
     {
         $validatedData = $request->validated();
 
@@ -53,14 +53,14 @@ class UserController extends Controller
             unset($validatedData['password']);
         }
 
-        $user->update($validatedData);
+        $member->update($validatedData);
 
-        return response()->json($user);
+        return response()->json($member);
     }
 
-    public function destroy(User $user)
+    public function destroy(Member $member)
     {
-        $user->delete();
+        $member->delete();
 
         return response()->json(null, 204);
     }
@@ -68,7 +68,7 @@ class UserController extends Controller
     public function destroyMultiple(Request $request)
     {
         $ids = $request->input('ids');
-        User::whereIn('id', $ids)->delete();
+        Member::whereIn('id', $ids)->delete();
 
         return response()->json(null, 204);
     }

@@ -18,16 +18,18 @@ const AppMenu = () => {
         {
             label: 'Transaksi',
             items: [
-                { label: 'Setoran', icon: 'pi pi-fw pi-download', to: '/setoran' },
-                { label: 'Penarikan', icon: 'pi pi-fw pi-upload', to: '/penarikan' },
-                { label: 'Angsuran', icon: 'pi pi-fw pi-refresh', to: '/angsuran' },
+                { label: 'Setoran', icon: 'pi pi-fw pi-download', to: '/deposits' },
+                { label: 'Penarikan', icon: 'pi pi-fw pi-upload', to: '/withdrawals' },
+                { label: 'Angsuran', icon: 'pi pi-fw pi-refresh', to: '/installments' },
             ]
         },
         {
             label: 'Data',
             items: [
-                { label: 'Pinjaman', icon: 'pi pi-fw pi-money-bill', to: '/pinjaman' },
-                { label: 'Anggota', icon: 'pi pi-fw pi-users', to: '/users' }
+                { label: 'Pinjaman', icon: 'pi pi-fw pi-money-bill', to: '/debts' },
+                { label: 'Rekening Anggota', icon: 'pi pi-fw pi-inbox', to: '/balances' },
+                { label: 'Anggota', icon: 'pi pi-fw pi-users', to: '/members' },
+                { label: 'Karyawan', icon: 'pi pi-fw pi-users', to: '/users' },
             ]
         },
         {

@@ -67,7 +67,7 @@ const UserCrud = () => {
         } catch (error) {
             console.error('Error loading users:', error);
             setLoading(false);
-            toast.current.show({ severity: 'error', summary: 'Error', detail: 'Failed to load users', life: 3000 });
+            toast.current.show({ severity: 'error', summary: 'Error', detail: 'Terjadi kesalahan saat memuat data', life: 3000 });
         }
     };
 
@@ -97,15 +97,15 @@ const UserCrud = () => {
             try {
                 if (user.id) {
                     await UserApi.updateUser(user.id, user);
-                    toast.current.show({ severity: 'success', summary: 'Successful', detail: 'User Updated', life: 3000 });
+                    toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Data anggota berhasil diubah', life: 3000 });
                 } else {
                     await UserApi.createUser(user);
-                    toast.current.show({ severity: 'success', summary: 'Successful', detail: 'User Created', life: 3000 });
+                    toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Berhasil menambahkan anggota baru', life: 3000 });
                 }
                 loadLazyData();
             } catch (error) {
                 console.error('Error saving user:', error);
-                toast.current.show({ severity: 'error', summary: 'Error', detail: 'Failed to save user', life: 3000 });
+                toast.current.show({ severity: 'error', summary: 'Error', detail: 'Terjadi kesalahan saat menyimpan data anggota', life: 3000 });
             }
 
             setUserDialog(false);
@@ -129,10 +129,10 @@ const UserCrud = () => {
             loadLazyData();
             setDeleteUserDialog(false);
             setUser(emptyUser);
-            toast.current.show({ severity: 'success', summary: 'Successful', detail: 'User Deleted', life: 3000 });
+            toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Data anggota berhasil dihapus', life: 3000 });
         } catch (error) {
             console.error('Error deleting user:', error);
-            toast.current.show({ severity: 'error', summary: 'Error', detail: 'Failed to delete user', life: 3000 });
+            toast.current.show({ severity: 'error', summary: 'Error', detail: 'Terjadi kesalahan saat menghapus data anggota', life: 3000 });
         }
     };
 
@@ -150,10 +150,10 @@ const UserCrud = () => {
             loadLazyData();
             setDeleteUsersDialog(false);
             setSelectedUsers(null);
-            toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Users Deleted', life: 3000 });
+            toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Berhasil menghapus anggota terpilih', life: 3000 });
         } catch (error) {
             console.error('Error deleting multiple users:', error);
-            toast.current.show({ severity: 'error', summary: 'Error', detail: 'Failed to delete users', life: 3000 });
+            toast.current.show({ severity: 'error', summary: 'Error', detail: 'Terjadi kesalahan saat menghapus anggota terpilih', life: 3000 });
         }
     };
 
@@ -204,29 +204,29 @@ const UserCrud = () => {
             <h5 className="m-0">Manajemen Anggota</h5>
             <span className="block mt-2 md:mt-0 p-input-icon-left">
                 <i className="pi pi-search" />
-                <InputText type="search" onInput={(e) => setGlobalFilter(e.target.value)} placeholder="Search..." />
+                <InputText type="search" onInput={(e) => setGlobalFilter(e.target.value)} placeholder="Cari..." />
             </span>
         </div>
     );
 
     const userDialogFooter = (
         <>
-            <Button label="Cancel" icon="pi pi-times" text onClick={hideDialog} />
-            <Button label="Save" icon="pi pi-check" text onClick={saveUser} />
+            <Button label="Batal" icon="pi pi-times" text onClick={hideDialog} />
+            <Button label="Simpan" icon="pi pi-check" text onClick={saveUser} />
         </>
     );
 
     const deleteUserDialogFooter = (
         <>
-            <Button label="No" icon="pi pi-times" text onClick={hideDeleteUserDialog} />
-            <Button label="Yes" icon="pi pi-check" text onClick={deleteUser} />
+            <Button label="Batal" icon="pi pi-times" text onClick={hideDeleteUserDialog} />
+            <Button label="Hapus" icon="pi pi-check" text onClick={deleteUser} />
         </>
     );
 
     const deleteUsersDialogFooter = (
         <>
-            <Button label="No" icon="pi pi-times" text onClick={hideDeleteUsersDialog} />
-            <Button label="Yes" icon="pi pi-check" text onClick={deleteSelectedUsers} />
+            <Button label="Batal" icon="pi pi-times" text onClick={hideDeleteUsersDialog} />
+            <Button label="Hapus" icon="pi pi-check" text onClick={deleteSelectedUsers} />
         </>
     );
 
@@ -262,32 +262,32 @@ const UserCrud = () => {
                         onFilter={(e) => setLazyParams({ ...lazyParams, ...e })}
                     >
                         <Column selectionMode="multiple" headerStyle={{ width: '4rem' }}></Column>
-                        <Column field="name" header="Name" sortable body={(rowData) => <span>{rowData.name}</span>} headerStyle={{ minWidth: '15rem' }}></Column>
+                        <Column field="name" header="Nama" sortable body={(rowData) => <span>{rowData.name}</span>} headerStyle={{ minWidth: '15rem' }}></Column>
                         <Column field="email" header="Email" sortable body={(rowData) => <span>{rowData.email}</span>} headerStyle={{ minWidth: '15rem' }}></Column>
-                        <Column field="role" header="Role" sortable body={(rowData) => <span>{rowData.role}</span>} headerStyle={{ minWidth: '10rem' }}></Column>
+                        <Column field="role" header="Peran" sortable body={(rowData) => <span>{rowData.role}</span>} headerStyle={{ minWidth: '10rem' }}></Column>
                         <Column body={actionBodyTemplate} headerStyle={{ minWidth: '10rem' }}></Column>
                     </DataTable>
 
                     <Dialog visible={userDialog} style={{ width: '450px' }} header="User Details" modal className="p-fluid" footer={userDialogFooter} onHide={hideDialog}>
                         <div className="field">
-                            <label htmlFor="name">Name</label>
+                            <label htmlFor="name">Nama</label>
                             <InputText id="name" value={user.name} onChange={(e) => onInputChange(e, 'name')} required autoFocus className={classNames({ 'p-invalid': submitted && !user.name })} />
-                            {submitted && !user.name && <small className="p-invalid">Name is required.</small>}
+                            {submitted && !user.name && <small className="p-invalid">Nama wajib diisi.</small>}
                         </div>
                         <div className="field">
                             <label htmlFor="email">Email</label>
                             <InputText id="email" value={user.email} onChange={(e) => onInputChange(e, 'email')} required className={classNames({ 'p-invalid': submitted && !user.email })} />
-                            {submitted && !user.email && <small className="p-invalid">Email is required.</small>}
+                            {submitted && !user.email && <small className="p-invalid">Email wajib diisi.</small>}
                         </div>
                         <div className="field">
-                            <label htmlFor="role">Role</label>
+                            <label htmlFor="role">Peran</label>
                             <Dropdown id="role" value={user.role} options={roleOptions} onChange={(e) => onInputChange(e, 'role')} placeholder="Select a Role" required className={classNames({ 'p-invalid': submitted && !user.role })} />
-                            {submitted && !user.role && <small className="p-invalid">Role is required.</small>}
+                            {submitted && !user.role && <small className="p-invalid">Peran wajib diisi.</small>}
                         </div>
                         <div className="field">
-                            <label htmlFor="password">Password</label>
+                            <label htmlFor="password">Kata Sandi</label>
                             <InputText id="password" type="password" value={user.password} onChange={(e) => onInputChange(e, 'password')} required className={classNames({ 'p-invalid': submitted && !user.password })} />
-                            {submitted && !user.password && <small className="p-invalid">Password is required.</small>}
+                            {submitted && !user.password && <small className="p-invalid">Kata sandi wajib diisi.</small>}
                         </div>
                     </Dialog>
 
@@ -296,7 +296,7 @@ const UserCrud = () => {
                             <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem' }} />
                             {user && (
                                 <span>
-                                    Are you sure you want to delete <b>{user.name}</b>?
+                                    Apakah Anda yakin ingin menghapus data <b>{user.name}</b>?
                                 </span>
                             )}
                         </div>
@@ -305,7 +305,7 @@ const UserCrud = () => {
                     <Dialog visible={deleteUsersDialog} style={{ width: '450px' }} header="Confirm" modal footer={deleteUsersDialogFooter} onHide={hideDeleteUsersDialog}>
                         <div className="flex align-items-center justify-content-center">
                             <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem' }} />
-                            {user && <span>Are you sure you want to delete the selected users?</span>}
+                            {selectedUsers && <span>Apakah Anda yakin ingin menghapus data-data anggota terpilih?</span>}
                         </div>
                     </Dialog>
                 </div>

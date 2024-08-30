@@ -12,7 +12,7 @@ class Withdrawal extends Model
     protected $fillable = [
         'reference',
         'balance_id',
-        'user_id',
+        'member_id',
         'amount',
         'status',
         'collector_id',
@@ -24,9 +24,9 @@ class Withdrawal extends Model
         return $this->belongsTo(Balance::class);
     }
 
-    public function user()
+    public function member()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Member::class);
     }
 
     public function collector()

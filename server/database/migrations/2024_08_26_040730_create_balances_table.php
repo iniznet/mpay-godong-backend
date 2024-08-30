@@ -14,7 +14,9 @@ return new class extends Migration
     {
         Schema::create('balances', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->string('name');
+            $table->string('code')->unique();
+            $table->foreignId('member_id')->constrained()->onDelete('cascade');
             $table->decimal('amount', 19, 2)->default(0);
             $table->string('status')->default(BalanceStatusEnum::ACTIVE->value);
             $table->timestamps();

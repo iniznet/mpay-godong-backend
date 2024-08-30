@@ -15,9 +15,10 @@ return new class extends Migration
         Schema::create('debts', function (Blueprint $table) {
             $table->id();
             $table->string('reference')->unique();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('member_id')->constrained()->onDelete('cascade');
             $table->decimal('amount', 19, 2);
-            $table->decimal('interest_rate', 5, 2)->default(0);
+            $table->decimal('interest_rate', 5, 2);
+            $table->integer('months');
             $table->string('status')->default(DebtStatusEnum::PENDING->value);
             $table->text('notes')->nullable();
             $table->timestamps();

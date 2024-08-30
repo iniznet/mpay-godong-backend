@@ -11,9 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('customer_collectors', function (Blueprint $table) {
+        Schema::create('member_collectors', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('customer_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('member_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('collector_id')->constrained('users')->onDelete('cascade');
             $table->timestamps();
         });
@@ -24,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('customer_collectors');
+        Schema::dropIfExists('member_collectors');
     }
 };
