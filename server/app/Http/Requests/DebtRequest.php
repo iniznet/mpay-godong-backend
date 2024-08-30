@@ -15,7 +15,7 @@ class DebtRequest extends FormRequest
     {
         return [
             'reference' => 'required|string|unique:debts,reference,' . $this->id,
-            'user_id' => 'required|exists:users,id',
+            'member_id' => 'required|exists:users,id',
             'amount' => 'required|numeric|min:0',
             'interest_rate' => 'required|numeric|min:0|max:100',
             'status' => 'required|string',

@@ -12,7 +12,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Dropdown } from 'primereact/dropdown';
 import { InputNumber } from 'primereact/inputnumber';
 import DebtApi from '@/services/DebtApi';
-import UserApi from '@/services/UserApi';
+import MemberApi from '@/services/MemberApi';
 import formatCurrency from '@/utils/currency';
 import { InputTextarea } from 'primereact/inputtextarea';
 
@@ -20,7 +20,7 @@ const DebtCrud = () => {
     let emptyDebt = {
         id: null,
         reference: '',
-        user_id: null,
+        member_id: null,
         amount: 0,
         interest_rate: 0,
         status: '',
@@ -45,7 +45,7 @@ const DebtCrud = () => {
     });
     const [totalRecords, setTotalRecords] = useState(0);
     const [loading, setLoading] = useState(false);
-    const [users, setUsers] = useState([]);
+    const [members, setMembers] = useState([]);
     const toast = useRef(null);
     const dt = useRef(null);
 
@@ -58,7 +58,7 @@ const DebtCrud = () => {
 
     useEffect(() => {
         loadLazyData();
-        loadUsers();
+        loadMembers();
     }, [lazyParams]);
 
     const loadLazyData = async () => {
@@ -81,12 +81,12 @@ const DebtCrud = () => {
         }
     };
 
-    const loadUsers = async () => {
+    const loadMembers = async () => {
         try {
-            const response = await UserApi.getUsers({ per_page: -1 });
-            setUsers(response.data.map(user => ({ label: user.name, value: user.id })));
+            const response = await MemberApi.getMembers({ per_page: -1 });
+            setMembers(response.data.map(member => ({ label: member.name, value: member.id })));
         } catch (error) {
-            console.error('Error loading users:', error);
+            console.error('Error loading members:', error);
         }
     };
 
@@ -289,7 +289,7 @@ const DebtCrud = () => {
                     >
                         <Column selectionMode="multiple" headerStyle={{ width: '4rem' }}></Column>
                         <Column field="reference" header="Kode Referensi" sortable body={(rowData) => <span>{rowData.reference}</span>} headerStyle={{ minWidth: '15rem' }}></Column>
-                        <Column field="user.name" header="Peminjam" sortable body={(rowData) => <span>{rowData.user?.name}</span>} headerStyle={{ minWidth: '15rem' }}></Column>
+                        <Column field="member.name" header="Peminjam" sortable body={(rowData) => <span>{rowData.member?.name}</span>} headerStyle={{ minWidth: '15rem' }}></Column>
                         <Column field="amount" header="Jumlah" sortable body={(rowData) => <span>{formatCurrency(rowData.amount)}</span>} headerStyle={{ minWidth: '10rem' }}></Column>
                         <Column field="interest_rate" header="Suku Bunga" sortable body={(rowData) => <span>{rowData.interest_rate}%</span>} headerStyle={{ minWidth: '10rem' }}></Column>
                         <Column field="status" header="Status" sortable body={(rowData) => <span>{rowData.status}</span>} headerStyle={{ minWidth: '10rem' }}></Column>
@@ -303,16 +303,16 @@ const DebtCrud = () => {
                             {submitted && !debt.reference && <small className="p-invalid">Kode Referensi wajib diisi.</small>}
                         </div>
                         <div className="field">
-                            <label htmlFor="user_id">Peminjam</label>
+                            <label htmlFor="member_id">Peminjam</label>
                             <Dropdown
-                                id="user_id"
-                                value={debt.user_id}
-                                options={users}
-                                onChange={(e) => onInputChange(e, 'user_id')}
+                                id="member_id"
+                                value={debt.member_id}
+                                options={members}
+                                onChange={(e) => onInputChange(e, 'member_id')}
                                 placeholder="Pilih Peminjam"
-                                className={classNames({ 'p-invalid': submitted && !debt.user_id })}
+                                className={classNames({ 'p-invalid': submitted && !debt.member_id })}
                             />
-                            {submitted && !debt.user_id && <small className="p-invalid">Peminjam wajib diisi.</small>}
+                            {submitted && !debt.member_id && <small className="p-invalid">Peminjam wajib diisi.</small>}
                         </div>
                         <div className="field">
                             <label htmlFor="amount">Jumlah</label>
@@ -345,7 +345,7 @@ const DebtCrud = () => {
                             <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem' }} />
                             {debt && (
                                 <span>
-                                    Apakah Anda yakin ingin menghapus pinjaman <b>{debt.user?.name}</b> dengan kode referensi <b>{debt.reference}</b>?
+                                    Apakah Anda yakin ingin menghapus pinjaman <b>{debt.member?.name}</b> dengan kode referensi <b>{debt.reference}</b>?
                                 </span>
                             )}
                         </div>

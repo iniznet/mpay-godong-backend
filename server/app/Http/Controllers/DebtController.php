@@ -10,13 +10,13 @@ class DebtController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Debt::with(['user']);
+        $query = Debt::with(['member']);
 
         if ($request->has('search')) {
             $search = $request->input('search');
             $query->where('reference', 'like', "%{$search}%")
                 ->orWhere('amount', 'like', "%{$search}%")
-                ->orWhereHas('user', function ($q) use ($search) {
+                ->orWhereHas('member', function ($q) use ($search) {
                     $q->where('name', 'like', "%{$search}%");
                 });
         }
@@ -39,7 +39,7 @@ class DebtController extends Controller
 
     public function show($id)
     {
-        $debt = Debt::with(['user'])->findOrFail($id);
+        $debt = Debt::with(['member'])->findOrFail($id);
         return response()->json($debt);
     }
 
