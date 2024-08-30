@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DebtController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\MemberController;
 use App\Http\Controllers\BalanceController;
 use App\Http\Controllers\DepositController;
 use App\Http\Controllers\WithdrawalController;
@@ -24,6 +25,9 @@ Route::middleware('auth:api')->group(function () {
 
     Route::apiResource('users', UserController::class);
     Route::post('users/delete-multiple', [UserController::class, 'destroyMultiple']);
+
+    Route::apiResource('members', MemberController::class);
+    Route::post('members/delete-multiple', [MemberController::class, 'destroyMultiple']);
 
     Route::apiResource('balances', BalanceController::class);
     Route::post('balances/delete-multiple', [BalanceController::class, 'destroyMultiple']);

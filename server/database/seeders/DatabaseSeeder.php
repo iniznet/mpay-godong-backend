@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $this->call([
+            MemberSeeder::class,
             BalanceSeeder::class,
             DepositSeeder::class,
             WithdrawalSeeder::class,

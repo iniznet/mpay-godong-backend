@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Member;
 use App\Http\Requests\MemberRequest;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 class MemberController extends Controller
 {
@@ -18,7 +18,8 @@ class MemberController extends Controller
             $query->where(function ($q) use ($searchTerm) {
                 $q->where('name', 'like', "%{$searchTerm}%")
                     ->orWhere('email', 'like', "%{$searchTerm}%")
-                    ->orWhere('phone', 'like', "%{$searchTerm}%");
+                    ->orWhere('phone', 'like', "%{$searchTerm}%")
+                    ->orWhere('status', 'like', "%{$searchTerm}%");
             });
         }
 
@@ -31,7 +32,10 @@ class MemberController extends Controller
     public function store(MemberRequest $request)
     {
         $validatedData = $request->validated();
-        $validatedData['password'] = Hash::make($validatedData['password']);
+
+        if ($request->hasFile('avatar')) {
+            $validatedData['avatar'] = $request->file('avatar')->store('avatars', 'public');
+        }
 
         $member = Member::create($validatedData);
 
@@ -47,10 +51,11 @@ class MemberController extends Controller
     {
         $validatedData = $request->validated();
 
-        if (isset($validatedData['password'])) {
-            $validatedData['password'] = Hash::make($validatedData['password']);
-        } else {
-            unset($validatedData['password']);
+        if ($request->hasFile('avatar')) {
+            if ($member->avatar) {
+                Storage::disk('public')->delete($member->avatar);
+            }
+            $validatedData['avatar'] = $request->file('avatar')->store('avatars', 'public');
         }
 
         $member->update($validatedData);
@@ -60,6 +65,9 @@ class MemberController extends Controller
 
     public function destroy(Member $member)
     {
+        if ($member->avatar) {
+            Storage::disk('public')->delete($member->avatar);
+        }
         $member->delete();
 
         return response()->json(null, 204);
@@ -68,6 +76,14 @@ class MemberController extends Controller
     public function destroyMultiple(Request $request)
     {
         $ids = $request->input('ids');
+        $members = Member::whereIn('id', $ids)->get();
+
+        foreach ($members as $member) {
+            if ($member->avatar) {
+                Storage::disk('public')->delete($member->avatar);
+            }
+        }
+
         Member::whereIn('id', $ids)->delete();
 
         return response()->json(null, 204);

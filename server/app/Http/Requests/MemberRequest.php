@@ -31,7 +31,7 @@ class MemberRequest extends FormRequest
             'postal_code' => 'required|string',
             'latitude' => 'nullable|numeric',
             'longitude' => 'nullable|numeric',
-            'avatar' => 'nullable|string',
+            'avatar' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             'status' => 'required|string',
         ];
     }
