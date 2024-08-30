@@ -12,7 +12,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Dropdown } from 'primereact/dropdown';
 import { InputNumber } from 'primereact/inputnumber';
 import WithdrawalApi from '@/services/WithdrawalApi';
-import UserApi from '@/services/UserApi';
+import MemberApi from '@/services/MemberApi';
 import BalanceApi from '@/services/BalanceApi';
 import formatCurrency from '@/utils/currency';
 import { InputTextarea } from 'primereact/inputtextarea';
@@ -22,7 +22,7 @@ const WithdrawalCrud = () => {
         id: null,
         reference: '',
         balance_id: null,
-        user_id: null,
+        member_id: null,
         amount: 0,
         status: '',
         collector_id: null,
@@ -47,10 +47,10 @@ const WithdrawalCrud = () => {
     });
     const [totalRecords, setTotalRecords] = useState(0);
     const [loading, setLoading] = useState(false);
-    const [users, setUsers] = useState([]);
+    const [members, setMembers] = useState([]);
     const [collectors, setCollectors] = useState([]);
     const [balances, setBalances] = useState([]);
-    const [userBalances, setUserBalances] = useState([]);
+    const [memberBalances, setMemberBalances] = useState([]);
     const toast = useRef(null);
     const dt = useRef(null);
 
@@ -62,7 +62,7 @@ const WithdrawalCrud = () => {
 
     useEffect(() => {
         loadLazyData();
-        loadUsers();
+        loadMembers();
         loadBalances();
     }, [lazyParams]);
 
@@ -86,20 +86,20 @@ const WithdrawalCrud = () => {
         }
     };
 
-    const loadUsers = async () => {
+    const loadMembers = async () => {
         try {
-            const response = await UserApi.getUsers({ per_page: -1 });
-            setUsers(response.data.map(user => ({ label: user.name, value: user.id })));
-            setCollectors(response.data.filter(user => user.role === 'collector').map(user => ({ label: user.name, value: user.id })));
+            const response = await MemberApi.getMembers({ per_page: -1 });
+            setMembers(response.data.map(member => ({ label: member.name, value: member.id })));
+            setCollectors(response.data.filter(member => member.role === 'collector').map(member => ({ label: member.name, value: member.id })));
         } catch (error) {
-            console.error('Error loading users:', error);
+            console.error('Error loading members:', error);
         }
     };
 
     const loadBalances = async () => {
         try {
             const response = await BalanceApi.getBalances({ per_page: -1 });
-            setBalances(response.data.map(balance => ({ label: balance.code, value: balance.id, user: balance.user })));
+            setBalances(response.data.map(balance => ({ label: balance.code, value: balance.id, member: balance.member })));
         } catch (error) {
             console.error('Error loading balances:', error);
         }
@@ -107,7 +107,7 @@ const WithdrawalCrud = () => {
 
     const openNew = () => {
         setWithdrawal(emptyWithdrawal);
-        setUserBalances([]);
+        setMemberBalances([]);
         setSubmitted(false);
         setWithdrawalDialog(true);
     };
@@ -151,8 +151,8 @@ const WithdrawalCrud = () => {
     const editWithdrawal = (withdrawal) => {
         setWithdrawal({ ...withdrawal });
 
-        if (withdrawal.user_id) {
-            setUserBalances(balances.filter(balance => balance.user.id === withdrawal.user_id));
+        if (withdrawal.member_id) {
+            setMemberBalances(balances.filter(balance => balance.member.id === withdrawal.member_id));
         }
 
         setWithdrawalDialog(true);
@@ -211,16 +211,16 @@ const WithdrawalCrud = () => {
         setWithdrawal(_withdrawal);
     };
 
-    const onUserSelectChange = (e) => {
+    const onMemberSelectChange = (e) => {
         const val = e.value || null;
         let _withdrawal = { ...withdrawal };
-        _withdrawal['user_id'] = val;
+        _withdrawal['member_id'] = val;
         setWithdrawal(_withdrawal);
 
         if (val) {
-            setUserBalances(balances.filter(balance => balance.user.id === val));
+            setMemberBalances(balances.filter(balance => balance.member.id === val));
         } else {
-            setUserBalances([]);
+            setMemberBalances([]);
         }
     };
 
@@ -323,7 +323,7 @@ const WithdrawalCrud = () => {
                     >
                         <Column selectionMode="multiple" headerStyle={{ width: '4rem' }}></Column>
                         <Column field="reference" header="Kode Referensi" sortable body={(rowData) => <span>{rowData.reference}</span>} headerStyle={{ minWidth: '15rem' }}></Column>
-                        <Column field="user.name" header="Kustomer" sortable body={(rowData) => <span>{rowData.user?.name}</span>} headerStyle={{ minWidth: '15rem' }}></Column>
+                        <Column field="member.name" header="Kustomer" sortable body={(rowData) => <span>{rowData.member?.name}</span>} headerStyle={{ minWidth: '15rem' }}></Column>
                         <Column field="balance.code" header="Nomor Rekening" sortable body={(rowData) => <span>{rowData.balance?.code}</span>} headerStyle={{ minWidth: '15rem' }}></Column>
                         <Column field="amount" header="Jumlah" sortable body={(rowData) => <span>{formatCurrency(rowData.amount)}</span>} headerStyle={{ minWidth: '10rem' }}></Column>
                         <Column field="status" header="Status" sortable body={(rowData) => <span>{rowData.status}</span>} headerStyle={{ minWidth: '10rem' }}></Column>
@@ -338,23 +338,23 @@ const WithdrawalCrud = () => {
                             {submitted && !withdrawal.reference && <small className="p-invalid">Kode Referensi wajib diisi.</small>}
                         </div>
                         <div className="field">
-                            <label htmlFor="user_id">Kustomer</label>
+                            <label htmlFor="member_id">Kustomer</label>
                             <Dropdown
-                                id="user_id"
-                                value={withdrawal.user_id}
-                                options={users}
-                                onChange={(e) => onUserSelectChange(e)}
+                                id="member_id"
+                                value={withdrawal.member_id}
+                                options={members}
+                                onChange={(e) => onMemberSelectChange(e)}
                                 placeholder="Pilih Kustomer"
-                                className={classNames({ 'p-invalid': submitted && !withdrawal.user_id })}
+                                className={classNames({ 'p-invalid': submitted && !withdrawal.member_id })}
                             />
-                            {submitted && !withdrawal.user_id && <small className="p-invalid">Kustomer wajib diisi.</small>}
+                            {submitted && !withdrawal.member_id && <small className="p-invalid">Kustomer wajib diisi.</small>}
                         </div>
                         <div className="field">
                             <label htmlFor="balance_id">Nomor Rekening</label>
                             <Dropdown
                                 id="balance_id"
                                 value={withdrawal.balance_id}
-                                options={userBalances}
+                                options={memberBalances}
                                 onChange={(e) => onInputChange(e, 'balance_id')}
                                 placeholder="Pilih Nomor Rekening"
                                 className={classNames({ 'p-invalid': submitted && !withdrawal.balance_id })}
@@ -400,7 +400,7 @@ const WithdrawalCrud = () => {
                             <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem' }} />
                             {withdrawal && (
                                 <span>
-                                    Apakah Anda yakin ingin menghapus penarikan <b>{withdrawal.user?.name}</b> dengan kode referensi <b>{withdrawal.reference}</b>?
+                                    Apakah Anda yakin ingin menghapus penarikan <b>{withdrawal.member?.name}</b> dengan kode referensi <b>{withdrawal.reference}</b>?
                                 </span>
                             )}
                         </div>

@@ -13,7 +13,11 @@ class WithdrawalFactory extends Factory
 {
     public function definition(): array
     {
-        $memberId = $this->faker->randomElement(Member::pluck('id')->toArray());
+        $members = Member::all();
+        $members = $members->filter(function ($member) {
+            return $member->balance()->exists();
+        });
+        $memberId = $this->faker->randomElement($members->pluck('id')->toArray());
         $balanceId = $this->faker->randomElement(Balance::where('member_id', $memberId)->pluck('id')->toArray());
 
         return [

@@ -10,13 +10,13 @@ class WithdrawalController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Withdrawal::with(['user', 'collector', 'balance']);
+        $query = Withdrawal::with(['member', 'collector', 'balance']);
 
         if ($request->has('search')) {
             $search = $request->input('search');
             $query->where('reference', 'like', "%{$search}%")
                 ->orWhere('amount', 'like', "%{$search}%")
-                ->orWhereHas('user', function ($q) use ($search) {
+                ->orWhereHas('member', function ($q) use ($search) {
                     $q->where('name', 'like', "%{$search}%");
                 });
         }
@@ -39,7 +39,7 @@ class WithdrawalController extends Controller
 
     public function show($id)
     {
-        $withdrawal = Withdrawal::with(['user', 'collector', 'balance'])->findOrFail($id);
+        $withdrawal = Withdrawal::with(['member', 'collector', 'balance'])->findOrFail($id);
         return response()->json($withdrawal);
     }
 
