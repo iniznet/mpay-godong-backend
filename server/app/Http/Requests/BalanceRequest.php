@@ -16,7 +16,7 @@ class BalanceRequest extends FormRequest
         return [
             'name' => 'required|string',
             'code' => 'required|string|unique:balances,code,' . $this->id,
-            'user_id' => 'required|exists:users,id',
+            'member_id' => 'required|exists:users,id',
             'amount' => 'required|numeric',
             'status' => 'required|string',
         ];

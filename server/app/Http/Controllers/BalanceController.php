@@ -10,11 +10,11 @@ class BalanceController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Balance::with('user');
+        $query = Balance::with('member');
 
         if ($request->has('search')) {
             $search = $request->input('search');
-            $query->whereHas('user', function ($q) use ($search) {
+            $query->whereHas('member', function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%");
             })->orWhere('amount', 'like', "%{$search}%");
         }
@@ -37,7 +37,7 @@ class BalanceController extends Controller
 
     public function show($id)
     {
-        $balance = Balance::with('user')->findOrFail($id);
+        $balance = Balance::with('member')->findOrFail($id);
         return response()->json($balance);
     }
 

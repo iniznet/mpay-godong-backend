@@ -11,7 +11,7 @@ import { classNames } from 'primereact/utils';
 import React, { useEffect, useRef, useState } from 'react';
 import { Dropdown } from 'primereact/dropdown';
 import BalanceApi from '@/services/BalanceApi';
-import UserApi from '@/services/UserApi';
+import MemberApi from '@/services/MemberApi';
 import { InputNumber } from 'primereact/inputnumber';
 import formatCurrency from '@/utils/currency';
 
@@ -20,7 +20,7 @@ const BalanceCrud = () => {
         id: null,
         name: '',
         code: '',
-        user_id: '',
+        member_id: '',
         amount: '',
         status: '',
     };
@@ -83,10 +83,10 @@ const BalanceCrud = () => {
 
     const loadMembers = async () => {
         try {
-            const response = await UserApi.getUsers({ per_page: -1 });
-            const formattedMembers = response.data.map(user => ({
-                label: user.name,
-                value: user.id
+            const response = await MemberApi.getMembers({ per_page: -1 });
+            const formattedMembers = response.data.map(member => ({
+                label: member.name,
+                value: member.id
             }));
             setMembers(formattedMembers);
         } catch (error) {
@@ -284,7 +284,7 @@ const BalanceCrud = () => {
                         onFilter={(e) => setLazyParams({ ...lazyParams, ...e })}
                     >
                         <Column selectionMode="multiple" headerStyle={{ width: '4rem' }}></Column>
-                        <Column field="user.name" header="Nama Anggota" sortable body={(rowData) => <span>{rowData.user.name}</span>} headerStyle={{ minWidth: '15rem' }}></Column>
+                        <Column field="member.name" header="Nama Anggota" sortable body={(rowData) => <span>{rowData.member.name}</span>} headerStyle={{ minWidth: '15rem' }}></Column>
                         <Column field="name" header="Nama Rekening" sortable body={(rowData) => <span>{rowData.name}</span>} headerStyle={{ minWidth: '15rem' }}></Column>
                         <Column field="code" header="Nomor Rekening" sortable body={(rowData) => <span>{rowData.code}</span>} headerStyle={{ minWidth: '15rem' }}></Column>
                         <Column field="amount" header="Jumlah" sortable body={(rowData) => <span>{formatCurrency(rowData.amount)}</span>} headerStyle={{ minWidth: '15rem' }}></Column>
@@ -294,16 +294,16 @@ const BalanceCrud = () => {
 
                     <Dialog visible={balanceDialog} style={{ width: '450px' }} header="Balance Details" modal className="p-fluid" footer={balanceDialogFooter} onHide={hideDialog}>
                         <div className="field">
-                            <label htmlFor="user_id">Nama Anggota</label>
+                            <label htmlFor="member_id">Nama Anggota</label>
                             <Dropdown
-                                id="user_id"
-                                value={balance.user_id}
+                                id="member_id"
+                                value={balance.member_id}
                                 options={members}
-                                onChange={(e) => onInputChange(e, 'user_id')}
+                                onChange={(e) => onInputChange(e, 'member_id')}
                                 placeholder="Pilih Anggota"
-                                className={classNames({ 'p-invalid': submitted && !balance.user_id })}
+                                className={classNames({ 'p-invalid': submitted && !balance.member_id })}
                             />
-                            {submitted && !balance.user_id && <small className="p-invalid">Anggota wajib dipilih.</small>}
+                            {submitted && !balance.member_id && <small className="p-invalid">Anggota wajib dipilih.</small>}
                         </div>
                         <div className="field">
                             <label htmlFor="name">Nama Rekening</label>
@@ -332,7 +332,7 @@ const BalanceCrud = () => {
                             <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem' }} />
                             {balance && (
                                 <span>
-                                    Apakah Anda yakin ingin menghapus data rekening untuk anggota <b>{balance.user?.name}</b> dengan saldo <b>{formatCurrency(balance.amount)}</b>?
+                                    Apakah Anda yakin ingin menghapus data rekening untuk anggota <b>{balance.member?.name}</b> dengan saldo <b>{formatCurrency(balance.amount)}</b>?
                                 </span>
                             )}
                         </div>

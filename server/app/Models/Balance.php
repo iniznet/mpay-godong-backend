@@ -15,8 +15,8 @@ class Balance extends Model
         'status',
     ];
 
-    public function user()
+    public function member()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Member::class);
     }
 }
