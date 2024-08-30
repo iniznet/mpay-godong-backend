@@ -10,13 +10,13 @@ class DepositController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Deposit::with(['user', 'collector', 'balance']);
+        $query = Deposit::with(['member', 'collector', 'balance']);
 
         if ($request->has('search')) {
             $search = $request->input('search');
             $query->where('reference', 'like', "%{$search}%")
                 ->orWhere('amount', 'like', "%{$search}%")
-                ->orWhereHas('user', function ($q) use ($search) {
+                ->orWhereHas('member', function ($q) use ($search) {
                     $q->where('name', 'like', "%{$search}%");
                 });
         }
@@ -39,7 +39,7 @@ class DepositController extends Controller
 
     public function show($id)
     {
-        $deposit = Deposit::with(['user', 'collector', 'balance'])->findOrFail($id);
+        $deposit = Deposit::with(['member', 'collector', 'balance'])->findOrFail($id);
         return response()->json($deposit);
     }
 

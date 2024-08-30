@@ -16,7 +16,7 @@ class DepositRequest extends FormRequest
         return [
             'reference' => 'required|string|unique:deposits,reference,' . $this->id,
             'balance_id' => 'required|exists:balances,id',
-            'user_id' => 'required|exists:users,id',
+            'member_id' => 'required|exists:users,id',
             'amount' => 'required|numeric|min:0',
             'status' => 'required|string',
             'collector_id' => 'required|exists:users,id',
