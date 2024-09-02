@@ -19,12 +19,12 @@ class DatabaseSeeder extends Seeder
             'email' => 'admin@example.com',
         ]);
 
-        $this->call([
-            MemberSeeder::class,
-            BalanceSeeder::class,
-            DepositSeeder::class,
-            WithdrawalSeeder::class,
-            DebtSeeder::class,
-        ]);
+        // $this->call([
+        //     MemberSeeder::class,
+        //     BalanceSeeder::class,
+        //     DepositSeeder::class,
+        //     WithdrawalSeeder::class,
+        //     DebtSeeder::class,
+        // ]);
     }
 }
