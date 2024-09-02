@@ -275,44 +275,44 @@ const AngsuranCrud = () => {
                         onFilter={(e) => setLazyParams({ ...lazyParams, ...e })}
                     >
                         <Column selectionMode="multiple" headerStyle={{ width: '4rem' }}></Column>
-                        <Column field="reference" header="Reference" sortable body={(rowData) => <span>{rowData.reference}</span>} headerStyle={{ minWidth: '15rem' }}></Column>
-                        <Column field="principal" header="Principal" sortable body={(rowData) => <span>{rowData.principal}</span>} headerStyle={{ minWidth: '10rem' }}></Column>
-                        <Column field="interest" header="Interest" sortable body={(rowData) => <span>{rowData.interest}</span>} headerStyle={{ minWidth: '10rem' }}></Column>
-                        <Column field="remaining" header="Remaining" sortable body={(rowData) => <span>{rowData.remaining}</span>} headerStyle={{ minWidth: '10rem' }}></Column>
-                        <Column field="month" header="Month" sortable body={(rowData) => <span>{rowData.month}</span>} headerStyle={{ minWidth: '8rem' }}></Column>
-                        <Column field="due_date" header="Due Date" sortable body={(rowData) => <span>{new Date(rowData.due_date).toLocaleDateString()}</span>} headerStyle={{ minWidth: '10rem' }}></Column>
+                        <Column field="reference" header="Kode" sortable body={(rowData) => <span>{rowData.reference}</span>} headerStyle={{ minWidth: '15rem' }}></Column>
+                        <Column field="principal" header="Pokok" sortable body={(rowData) => <span>{rowData.principal}</span>} headerStyle={{ minWidth: '10rem' }}></Column>
+                        <Column field="interest" header="Bunga" sortable body={(rowData) => <span>{rowData.interest}</span>} headerStyle={{ minWidth: '10rem' }}></Column>
+                        <Column field="remaining" header="Sisa" sortable body={(rowData) => <span>{rowData.remaining}</span>} headerStyle={{ minWidth: '10rem' }}></Column>
+                        <Column field="month" header="Bulan" sortable body={(rowData) => <span>{rowData.month}</span>} headerStyle={{ minWidth: '8rem' }}></Column>
+                        <Column field="due_date" header="Tenggat" sortable body={(rowData) => <span>{new Date(rowData.due_date).toLocaleDateString()}</span>} headerStyle={{ minWidth: '10rem' }}></Column>
                         <Column field="status" header="Status" sortable body={(rowData) => <span>{rowData.status}</span>} headerStyle={{ minWidth: '10rem' }}></Column>
                         <Column body={actionBodyTemplate} headerStyle={{ minWidth: '10rem' }}></Column>
                     </DataTable>
 
                     <Dialog visible={installmentDialog} style={{ width: '450px' }} header="Installment Details" modal className="p-fluid" footer={installmentDialogFooter} onHide={hideDialog}>
                         <div className="field">
-                            <label htmlFor="reference">Reference</label>
+                            <label htmlFor="reference">Kode Transaksi</label>
                             <InputText id="reference" value={installment.reference} onChange={(e) => onInputChange(e, 'reference')} required autoFocus className={classNames({ 'p-invalid': submitted && !installment.reference })} />
                             {submitted && !installment.reference && <small className="p-invalid">Reference is required.</small>}
                         </div>
                         <div className="field">
-                            <label htmlFor="principal">Principal</label>
+                            <label htmlFor="principal">Pokok</label>
                             <InputText id="principal" value={installment.principal} onChange={(e) => onInputChange(e, 'principal')} required keyfilter="num" className={classNames({ 'p-invalid': submitted && !installment.principal })} />
                             {submitted && !installment.principal && <small className="p-invalid">Principal is required.</small>}
                         </div>
                         <div className="field">
-                            <label htmlFor="interest">Interest</label>
+                            <label htmlFor="interest">Bunga</label>
                             <InputText id="interest" value={installment.interest} onChange={(e) => onInputChange(e, 'interest')} required keyfilter="num" className={classNames({ 'p-invalid': submitted && !installment.interest })} />
                             {submitted && !installment.interest && <small className="p-invalid">Interest is required.</small>}
                         </div>
                         <div className="field">
-                            <label htmlFor="remaining">Remaining</label>
+                            <label htmlFor="remaining">Sisa</label>
                             <InputText id="remaining" value={installment.remaining} onChange={(e) => onInputChange(e, 'remaining')} required keyfilter="num" className={classNames({ 'p-invalid': submitted && !installment.remaining })} />
                             {submitted && !installment.remaining && <small className="p-invalid">Remaining is required.</small>}
                         </div>
                         <div className="field">
-                            <label htmlFor="month">Month</label>
+                            <label htmlFor="month">Bulan</label>
                             <InputText id="month" value={installment.month} onChange={(e) => onInputChange(e, 'month')} required keyfilter="int" className={classNames({ 'p-invalid': submitted && !installment.month })} />
                             {submitted && !installment.month && <small className="p-invalid">Month is required.</small>}
                         </div>
                         <div className="field">
-                            <label htmlFor="due_date">Due Date</label>
+                            <label htmlFor="due_date">Tanggal Tenggat</label>
                             <Calendar id="due_date" value={installment.due_date} onChange={(e) => onDateChange(e, 'due_date')} showIcon required className={classNames({ 'p-invalid': submitted && !installment.due_date })} />
                             {submitted && !installment.due_date && <small className="p-invalid">Due Date is required.</small>}
                         </div>
@@ -322,7 +322,7 @@ const AngsuranCrud = () => {
                             {submitted && !installment.status && <small className="p-invalid">Status is required.</small>}
                         </div>
                         <div className="field">
-                            <label htmlFor="notes">Notes</label>
+                            <label htmlFor="notes">Catatan</label>
                             <InputText id="notes" value={installment.notes} onChange={(e) => onInputChange(e, 'notes')} />
                         </div>
                     </Dialog>

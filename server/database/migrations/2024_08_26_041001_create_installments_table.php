@@ -15,7 +15,7 @@ return new class extends Migration
         Schema::create('installments', function (Blueprint $table) {
             $table->id();
             $table->string('reference')->unique();
-            $table->foreignId('member_id')->constrained()->onDelete('cascade');
+            $table->foreignId('debt_id')->constrained()->onDelete('cascade');
             $table->decimal('principal', 19, 2);
             $table->decimal('interest', 19, 2);
             $table->decimal('remaining', 19, 2);
