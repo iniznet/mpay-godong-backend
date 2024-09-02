@@ -117,14 +117,15 @@ const MemberCrud = () => {
                     await MemberApi.createMember(formData);
                     toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Berhasil menambahkan anggota baru', life: 3000 });
                 }
+
                 loadLazyData();
+
+                setMemberDialog(false);
+                setMember(emptyMember);
             } catch (error) {
                 console.error('Error saving member:', error);
                 toast.current.show({ severity: 'error', summary: 'Error', detail: 'Terjadi kesalahan saat menyimpan data anggota', life: 3000 });
             }
-
-            setMemberDialog(false);
-            setMember(emptyMember);
         }
     };
 

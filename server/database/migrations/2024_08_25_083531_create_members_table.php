@@ -21,8 +21,8 @@ return new class extends Migration
             $table->string('city');
             $table->string('state');
             $table->string('postal_code');
-            $table->decimal('latitude', 10, 8);
-            $table->decimal('longitude', 11, 8);
+            $table->decimal('latitude', 10, 8)->nullable();
+            $table->decimal('longitude', 11, 8)->nullable();
             $table->string('avatar')->nullable();
             $table->string('status')->default(MemberStatusEnum::PENDING->value);
             $table->timestamps();
