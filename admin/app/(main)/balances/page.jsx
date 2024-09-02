@@ -126,13 +126,13 @@ const BalanceCrud = () => {
                 toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Berhasil menambahkan rekening baru', life: 3000 });
             }
             loadLazyData();
+
+            setBalanceDialog(false);
+            setBalance(emptyBalance);
         } catch (error) {
             console.error('Error saving balance:', error);
             toast.current.show({ severity: 'error', summary: 'Error', detail: 'Terjadi kesalahan saat menyimpan data rekening', life: 3000 });
         }
-
-        setBalanceDialog(false);
-        setBalance(emptyBalance);
     };
 
     const editBalance = (balance) => {
