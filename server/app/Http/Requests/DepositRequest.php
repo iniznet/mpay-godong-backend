@@ -19,7 +19,7 @@ class DepositRequest extends FormRequest
             'member_id' => 'required|exists:users,id',
             'amount' => 'required|numeric|min:0',
             'status' => 'required|string',
-            'collector_id' => 'required|exists:users,id',
+            'collector_id' => 'nullable|exists:users,id',
             'notes' => 'nullable|string',
         ];
     }
