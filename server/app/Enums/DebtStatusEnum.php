@@ -9,5 +9,5 @@ enum DebtStatusEnum: string
     case REJECTED = 'rejected';
     case ACTIVE = 'active';
     case ON_HOLD = 'on_hold';
-    case COMPLETED = 'completed';
+    case PAID = 'paid';
 }

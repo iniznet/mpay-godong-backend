@@ -23,6 +23,7 @@ const DebtCrud = () => {
         member_id: null,
         amount: 0,
         interest_rate: 0,
+        months: 1,
         status: '',
         notes: '',
     };
@@ -51,7 +52,7 @@ const DebtCrud = () => {
 
     const statusOptions = [
         { label: 'Tertunda', value: 'pending' },
-        { label: 'Disetujui', value: 'approved' },
+        { label: 'Disetujui', value: 'active' },
         { label: 'Ditolak', value: 'rejected' },
         { label: 'Lunas', value: 'paid' }
     ];
@@ -121,14 +122,15 @@ const DebtCrud = () => {
                     await DebtApi.createDebt(debt);
                     toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Berhasil menambahkan pinjaman baru', life: 3000 });
                 }
+
                 loadLazyData();
+
+                setDebtDialog(false);
+                setDebt(emptyDebt);
             } catch (error) {
                 console.error('Error saving debt:', error);
                 toast.current.show({ severity: 'error', summary: 'Error', detail: 'Terjadi kesalahan saat menyimpan data pinjaman', life: 3000 });
             }
-
-            setDebtDialog(false);
-            setDebt(emptyDebt);
         }
     };
 
@@ -291,7 +293,8 @@ const DebtCrud = () => {
                         <Column field="reference" header="Kode Referensi" sortable body={(rowData) => <span>{rowData.reference}</span>} headerStyle={{ minWidth: '15rem' }}></Column>
                         <Column field="member.name" header="Peminjam" sortable body={(rowData) => <span>{rowData.member?.name}</span>} headerStyle={{ minWidth: '15rem' }}></Column>
                         <Column field="amount" header="Jumlah" sortable body={(rowData) => <span>{formatCurrency(rowData.amount)}</span>} headerStyle={{ minWidth: '10rem' }}></Column>
-                        <Column field="interest_rate" header="Suku Bunga" sortable body={(rowData) => <span>{rowData.interest_rate}%</span>} headerStyle={{ minWidth: '10rem' }}></Column>
+                        <Column field="interest_rate" header="Bunga Pinjaman" sortable body={(rowData) => <span>{rowData.interest_rate}%</span>} headerStyle={{ minWidth: '10rem' }}></Column>
+                        <Column field="months" header="Lama Pinjaman" sortable body={(rowData) => <span>{rowData.months} bulan</span>} headerStyle={{ minWidth: '10rem' }}></Column>
                         <Column field="status" header="Status" sortable body={(rowData) => <span>{rowData.status}</span>} headerStyle={{ minWidth: '10rem' }}></Column>
                         <Column body={actionBodyTemplate} headerStyle={{ minWidth: '10rem' }}></Column>
                     </DataTable>
@@ -319,8 +322,12 @@ const DebtCrud = () => {
                             <InputNumber id="amount" value={debt.amount} onValueChange={(e) => onInputNumberChange(e, 'amount')} mode="currency" currency="IDR" locale="id-ID" />
                         </div>
                         <div className="field">
-                            <label htmlFor="interest_rate">Suku Bunga (%)</label>
+                            <label htmlFor="interest_rate">Bunga Pinjaman (%)</label>
                             <InputNumber id="interest_rate" value={debt.interest_rate} onValueChange={(e) => onInputNumberChange(e, 'interest_rate')} mode="decimal" minFractionDigits={2} maxFractionDigits={2} />
+                        </div>
+                        <div className="field">
+                            <label htmlFor="months">Lama Pinjaman (bulan)</label>
+                            <InputNumber id="months" value={debt.months} onValueChange={(e) => onInputNumberChange(e, 'months')} mode="decimal" minFractionDigits={0} maxFractionDigits={0} />
                         </div>
                         <div className="field">
                             <label htmlFor="status">Status</label>

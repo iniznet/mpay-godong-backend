@@ -18,6 +18,7 @@ class DebtRequest extends FormRequest
             'member_id' => 'required|exists:users,id',
             'amount' => 'required|numeric|min:0',
             'interest_rate' => 'required|numeric|min:0|max:100',
+            'months' => 'required|integer|min:1',
             'status' => 'required|string',
             'notes' => 'nullable|string',
         ];
