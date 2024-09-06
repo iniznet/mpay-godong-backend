@@ -1,4 +1,6 @@
 'use client';
+
+import React, { useEffect, useRef, useState } from 'react';
 import { Button } from 'primereact/button';
 import { Column } from 'primereact/column';
 import { DataTable } from 'primereact/datatable';
@@ -7,33 +9,34 @@ import { InputText } from 'primereact/inputtext';
 import { Toast } from 'primereact/toast';
 import { Toolbar } from 'primereact/toolbar';
 import { classNames } from 'primereact/utils';
-import React, { useEffect, useRef, useState } from 'react';
+import { Calendar } from 'primereact/calendar';
 import { Dropdown } from 'primereact/dropdown';
-import MemberApi from '@/services/MemberApi';
-import { Image } from 'primereact/image';
+import NasabahApi from '@/services/NasabahApi';
 
-const MemberCrud = () => {
-    let emptyMember = {
-        id: null,
-        name: '',
-        email: '',
-        phone: '',
-        address: '',
-        city: '',
-        state: '',
-        postal_code: '',
-        latitude: '',
-        longitude: '',
-        status: '',
-        avatar: null,
+const NasabahCrud = () => {
+    let emptyNasabah = {
+        ID: null,
+        CabangEntry: '',
+        Nama: '',
+        Kode: '',
+        Tgl: new Date(),
+        KodeLama: '',
+        TglLahir: null,
+        TempatLahir: '',
+        StatusPerkawinan: '',
+        KTP: '',
+        Agama: '',
+        Alamat: '',
+        Telepon: '',
+        Email: '',
     };
 
-    const [members, setMembers] = useState(null);
-    const [memberDialog, setMemberDialog] = useState(false);
-    const [deleteMemberDialog, setDeleteMemberDialog] = useState(false);
-    const [deleteMembersDialog, setDeleteMembersDialog] = useState(false);
-    const [member, setMember] = useState(emptyMember);
-    const [selectedMembers, setSelectedMembers] = useState(null);
+    const [nasabahs, setNasabahs] = useState(null);
+    const [nasabahDialog, setNasabahDialog] = useState(false);
+    const [deleteNasabahDialog, setDeleteNasabahDialog] = useState(false);
+    const [deleteNasabahsDialog, setDeleteNasabahsDialog] = useState(false);
+    const [nasabah, setNasabah] = useState(emptyNasabah);
+    const [selectedNasabahs, setSelectedNasabahs] = useState(null);
     const [submitted, setSubmitted] = useState(false);
     const [globalFilter, setGlobalFilter] = useState('');
     const [lazyParams, setLazyParams] = useState({
@@ -49,10 +52,11 @@ const MemberCrud = () => {
     const toast = useRef(null);
     const dt = useRef(null);
 
-    const statusOptions = [
-        { label: 'Pending', value: 'pending' },
-        { label: 'Active', value: 'active' },
-        { label: 'Inactive', value: 'inactive' }
+    const statusPerkawinanOptions = [
+        { label: 'Belum Kawin', value: 'B' },
+        { label: 'Kawin', value: 'K' },
+        { label: 'Cerai Hidup', value: 'H' },
+        { label: 'Cerai Mati', value: 'M' }
     ];
 
     useEffect(() => {
@@ -62,93 +66,87 @@ const MemberCrud = () => {
     const loadLazyData = async () => {
         setLoading(true);
         try {
-            const response = await MemberApi.getMembers({
+            const response = await NasabahApi.getNasabahs({
                 page: lazyParams.page,
                 per_page: lazyParams.rows,
                 sort_field: lazyParams.sortField,
                 sort_order: lazyParams.sortOrder,
                 search: globalFilter
             });
-            setMembers(response.data.data);
+            setNasabahs(response.data.data);
             setTotalRecords(response.data.total);
             setLoading(false);
         } catch (error) {
-            console.error('Error loading members:', error);
+            console.error('Error loading nasabahs:', error);
             setLoading(false);
             toast.current.show({ severity: 'error', summary: 'Error', detail: 'Terjadi kesalahan saat memuat data', life: 3000 });
         }
     };
 
     const openNew = () => {
-        setMember(emptyMember);
+        setNasabah(emptyNasabah);
         setSubmitted(false);
-        setMemberDialog(true);
+        setNasabahDialog(true);
     };
 
     const hideDialog = () => {
         setSubmitted(false);
-        setMemberDialog(false);
+        setNasabahDialog(false);
     };
 
-    const hideDeleteMemberDialog = () => {
-        setDeleteMemberDialog(false);
+    const hideDeleteNasabahDialog = () => {
+        setDeleteNasabahDialog(false);
     };
 
-    const hideDeleteMembersDialog = () => {
-        setDeleteMembersDialog(false);
+    const hideDeleteNasabahsDialog = () => {
+        setDeleteNasabahsDialog(false);
     };
 
-    const saveMember = async () => {
+    const saveNasabah = async () => {
         setSubmitted(true);
 
-        if (member.name.trim() && member.email.trim() && member.phone.trim()) {
+        if (nasabah.Nama.trim() && nasabah.Kode.trim()) {
             try {
-                const formData = new FormData();
-                Object.keys(member).forEach(key => {
-                    if (key !== 'avatar' || (key === 'avatar' && member.avatar instanceof File)) {
-                        formData.append(key, member[key]);
-                    }
-                });
+                nasabah.Tgl = nasabah.Tgl ? nasabah.Tgl.toISOString().split('T')[0] : null;
 
-                if (member.id) {
-                    await MemberApi.updateMember(member.id, formData);
-                    toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Data anggota berhasil diubah', life: 3000 });
+                if (nasabah.ID) {
+                    await NasabahApi.updateNasabah(nasabah.ID, nasabah);
+                    toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Data nasabah berhasil diubah', life: 3000 });
                 } else {
-                    await MemberApi.createMember(formData);
-                    toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Berhasil menambahkan anggota baru', life: 3000 });
+                    await NasabahApi.createNasabah(nasabah);
+                    toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Berhasil menambahkan nasabah baru', life: 3000 });
                 }
 
                 loadLazyData();
-
-                setMemberDialog(false);
-                setMember(emptyMember);
+                setNasabahDialog(false);
+                setNasabah(emptyNasabah);
             } catch (error) {
-                console.error('Error saving member:', error);
-                toast.current.show({ severity: 'error', summary: 'Error', detail: 'Terjadi kesalahan saat menyimpan data anggota', life: 3000 });
+                console.error('Error saving nasabah:', error);
+                toast.current.show({ severity: 'error', summary: 'Error', detail: 'Terjadi kesalahan saat menyimpan data nasabah', life: 3000 });
             }
         }
     };
 
-    const editMember = (member) => {
-        setMember({ ...member });
-        setMemberDialog(true);
+    const editNasabah = (nasabah) => {
+        setNasabah({ ...nasabah });
+        setNasabahDialog(true);
     };
 
-    const confirmDeleteMember = (member) => {
-        setMember(member);
-        setDeleteMemberDialog(true);
+    const confirmDeleteNasabah = (nasabah) => {
+        setNasabah(nasabah);
+        setDeleteNasabahDialog(true);
     };
 
-    const deleteMember = async () => {
+    const deleteNasabah = async () => {
         try {
-            await MemberApi.deleteMember(member.id);
+            await NasabahApi.deleteNasabah(nasabah.ID);
             loadLazyData();
-            setDeleteMemberDialog(false);
-            setMember(emptyMember);
-            toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Data anggota berhasil dihapus', life: 3000 });
+            setDeleteNasabahDialog(false);
+            setNasabah(emptyNasabah);
+            toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Data nasabah berhasil dihapus', life: 3000 });
         } catch (error) {
-            console.error('Error deleting member:', error);
-            toast.current.show({ severity: 'error', summary: 'Error', detail: 'Terjadi kesalahan saat menghapus data anggota', life: 3000 });
+            console.error('Error deleting nasabah:', error);
+            toast.current.show({ severity: 'error', summary: 'Error', detail: 'Terjadi kesalahan saat menghapus data nasabah', life: 3000 });
         }
     };
 
@@ -157,49 +155,40 @@ const MemberCrud = () => {
     };
 
     const confirmDeleteSelected = () => {
-        setDeleteMembersDialog(true);
+        setDeleteNasabahsDialog(true);
     };
 
-    const deleteSelectedMembers = async () => {
+    const deleteSelectedNasabahs = async () => {
         try {
-            await MemberApi.deleteMultipleMembers(selectedMembers.map(member => member.id));
+            await NasabahApi.deleteMultipleNasabahs(selectedNasabahs.map(nasabah => nasabah.ID));
             loadLazyData();
-            setDeleteMembersDialog(false);
-            setSelectedMembers(null);
-            toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Berhasil menghapus anggota terpilih', life: 3000 });
+            setDeleteNasabahsDialog(false);
+            setSelectedNasabahs(null);
+            toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Berhasil menghapus nasabah terpilih', life: 3000 });
         } catch (error) {
-            console.error('Error deleting multiple members:', error);
-            toast.current.show({ severity: 'error', summary: 'Error', detail: 'Terjadi kesalahan saat menghapus anggota terpilih', life: 3000 });
+            console.error('Error deleting multiple nasabahs:', error);
+            toast.current.show({ severity: 'error', summary: 'Error', detail: 'Terjadi kesalahan saat menghapus nasabah terpilih', life: 3000 });
         }
     };
 
     const onInputChange = (e, name) => {
         const val = (e.target && e.target.value) || '';
-        let _member = { ...member };
-        _member[`${name}`] = val;
-        setMember(_member);
+        let _nasabah = { ...nasabah };
+        _nasabah[`${name}`] = val;
+        setNasabah(_nasabah);
     };
 
-    const onFileChange = (e) => {
-        let _member = { ...member };
-        _member['avatar'] = e.target.files[0];
-        setMember(_member);
-    };
-
-    const onPageChange = (event) => {
-        setLazyParams({
-            ...lazyParams,
-            first: event.first,
-            rows: event.rows,
-            page: event.page + 1
-        });
+    const onDateChange = (e, name) => {
+        let _nasabah = { ...nasabah };
+        _nasabah[`${name}`] = e.value;
+        setNasabah(_nasabah);
     };
 
     const leftToolbarTemplate = () => {
         return (
             <React.Fragment>
-                <Button label="New" icon="pi pi-plus" severity="success" className=" mr-2" onClick={openNew} />
-                <Button label="Delete" icon="pi pi-trash" severity="danger" onClick={confirmDeleteSelected} disabled={!selectedMembers || !selectedMembers.length} />
+                <Button label="New" icon="pi pi-plus" severity="success" className="mr-2" onClick={openNew} />
+                <Button label="Delete" icon="pi pi-trash" severity="danger" onClick={confirmDeleteSelected} disabled={!selectedNasabahs || !selectedNasabahs.length} />
             </React.Fragment>
         );
     };
@@ -215,15 +204,15 @@ const MemberCrud = () => {
     const actionBodyTemplate = (rowData) => {
         return (
             <>
-                <Button icon="pi pi-pencil" rounded severity="success" className="mr-2" onClick={() => editMember(rowData)} />
-                <Button icon="pi pi-trash" rounded severity="warning" onClick={() => confirmDeleteMember(rowData)} />
+                <Button icon="pi pi-pencil" rounded severity="success" className="mr-2" onClick={() => editNasabah(rowData)} />
+                <Button icon="pi pi-trash" rounded severity="warning" onClick={() => confirmDeleteNasabah(rowData)} />
             </>
         );
     };
 
     const header = (
         <div className="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
-            <h5 className="m-0">Manajemen Anggota</h5>
+            <h5 className="m-0">Manajemen Nasabah</h5>
             <span className="block mt-2 md:mt-0 p-input-icon-left">
                 <i className="pi pi-search" />
                 <InputText type="search" onInput={(e) => setGlobalFilter(e.target.value)} placeholder="Cari..." />
@@ -231,24 +220,24 @@ const MemberCrud = () => {
         </div>
     );
 
-    const memberDialogFooter = (
+    const nasabahDialogFooter = (
         <>
             <Button label="Batal" icon="pi pi-times" text onClick={hideDialog} />
-            <Button label="Simpan" icon="pi pi-check" text onClick={saveMember} />
+            <Button label="Simpan" icon="pi pi-check" text onClick={saveNasabah} />
         </>
     );
 
-    const deleteMemberDialogFooter = (
+    const deleteNasabahDialogFooter = (
         <>
-            <Button label="Batal" icon="pi pi-times" text onClick={hideDeleteMemberDialog} />
-            <Button label="Hapus" icon="pi pi-check" text onClick={deleteMember} />
+            <Button label="Batal" icon="pi pi-times" text onClick={hideDeleteNasabahDialog} />
+            <Button label="Hapus" icon="pi pi-check" text onClick={deleteNasabah} />
         </>
     );
 
-    const deleteMembersDialogFooter = (
+    const deleteNasabahsDialogFooter = (
         <>
-            <Button label="Batal" icon="pi pi-times" text onClick={hideDeleteMembersDialog} />
-            <Button label="Hapus" icon="pi pi-check" text onClick={deleteSelectedMembers} />
+            <Button label="Batal" icon="pi pi-times" text onClick={hideDeleteNasabahsDialog} />
+            <Button label="Hapus" icon="pi pi-check" text onClick={deleteSelectedNasabahs} />
         </>
     );
 
@@ -261,107 +250,109 @@ const MemberCrud = () => {
 
                     <DataTable
                         ref={dt}
-                        value={members}
-                        selection={selectedMembers}
-                        onSelectionChange={(e) => setSelectedMembers(e.value)}
-                        dataKey="id"
+                        value={nasabahs}
+                        selection={selectedNasabahs}
+                        onSelectionChange={(e) => setSelectedNasabahs(e.value)}
+                        dataKey="ID"
                         paginator
                         rows={lazyParams.rows}
                         rowsPerPageOptions={[5, 10, 25]}
                         className="datatable-responsive"
                         paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-                        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} members"
+                        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} nasabahs"
                         globalFilter={globalFilter}
-                        emptyMessage="No members found."
+                        emptyMessage="No nasabahs found."
                         header={header}
                         responsiveLayout="scroll"
                         lazy
                         totalRecords={totalRecords}
                         loading={loading}
                         first={lazyParams.first}
-                        onPage={onPageChange}
+                        onPage={(e) => setLazyParams({ ...lazyParams, ...e })}
                         onSort={(e) => setLazyParams({ ...lazyParams, ...e })}
                         onFilter={(e) => setLazyParams({ ...lazyParams, ...e })}
                     >
                         <Column selectionMode="multiple" headerStyle={{ width: '4rem' }}></Column>
-                        <Column field="name" header="Nama" sortable body={(rowData) => <span>{rowData.name}</span>} headerStyle={{ minWidth: '15rem' }}></Column>
-                        <Column field="email" header="Email" sortable body={(rowData) => <span>{rowData.email}</span>} headerStyle={{ minWidth: '15rem' }}></Column>
-                        <Column field="phone" header="Telepon" sortable body={(rowData) => <span>{rowData.phone}</span>} headerStyle={{ minWidth: '10rem' }}></Column>
-                        <Column field="status" header="Status" sortable body={(rowData) => <span>{rowData.status}</span>} headerStyle={{ minWidth: '10rem' }}></Column>
+                        <Column field="Nama" header="Nama" sortable body={(rowData) => <span>{rowData.Nama}</span>} headerStyle={{ minWidth: '15rem' }}></Column>
+                        <Column field="Kode" header="Kode" sortable body={(rowData) => <span>{rowData.Kode}</span>} headerStyle={{ minWidth: '10rem' }}></Column>
+                        <Column field="Tgl" header="Tanggal" sortable body={(rowData) => <span>{new Date(rowData.Tgl).toLocaleDateString()}</span>} headerStyle={{ minWidth: '10rem' }}></Column>
+                        <Column field="Telepon" header="Telepon" sortable body={(rowData) => <span>{rowData.Telepon}</span>} headerStyle={{ minWidth: '10rem' }}></Column>
                         <Column body={actionBodyTemplate} headerStyle={{ minWidth: '10rem' }}></Column>
                     </DataTable>
 
-                    <Dialog visible={memberDialog} style={{ width: '450px' }} header="Member Details" modal className="p-fluid" footer={memberDialogFooter} onHide={hideDialog}>
+                    <Dialog visible={nasabahDialog} style={{ width: '450px' }} header="Nasabah Details" modal className="p-fluid" footer={nasabahDialogFooter} onHide={hideDialog}>
                         <div className="field">
-                            <label htmlFor="name">Nama</label>
-                            <InputText id="name" value={member.name} onChange={(e) => onInputChange(e, 'name')} required autoFocus className={classNames({ 'p-invalid': submitted && !member.name })} />
-                            {submitted && !member.name && <small className="p-invalid">Nama wajib diisi.</small>}
+                            <label htmlFor="CabangEntry">Cabang Entry</label>
+                            <InputText id="CabangEntry" value={nasabah.CabangEntry} onChange={(e) => onInputChange(e, 'CabangEntry')} required className={classNames({ 'p-invalid': submitted && !nasabah.CabangEntry })} />
+                            {submitted && !nasabah.CabangEntry && <small className="p-invalid">Cabang Entry wajib diisi.</small>}
                         </div>
                         <div className="field">
-                            <label htmlFor="email">Email</label>
-                            <InputText id="email" value={member.email} onChange={(e) => onInputChange(e, 'email')} required className={classNames({ 'p-invalid': submitted && !member.email })} />
-                            {submitted && !member.email && <small className="p-invalid">Email wajib diisi.</small>}
+                            <label htmlFor="Nama">Nama</label>
+                            <InputText id="Nama" value={nasabah.Nama} onChange={(e) => onInputChange(e, 'Nama')} required autoFocus className={classNames({ 'p-invalid': submitted && !nasabah.Nama })} />
+                            {submitted && !nasabah.Nama && <small className="p-invalid">Nama wajib diisi.</small>}
                         </div>
                         <div className="field">
-                            <label htmlFor="phone">Telepon</label>
-                            <InputText id="phone" value={member.phone} onChange={(e) => onInputChange(e, 'phone')} required className={classNames({ 'p-invalid': submitted && !member.phone })} />
-                            {submitted && !member.phone && <small className="p-invalid">Telepon wajib diisi.</small>}
+                            <label htmlFor="Kode">Kode</label>
+                            <InputText id="Kode" value={nasabah.Kode} onChange={(e) => onInputChange(e, 'Kode')} required className={classNames({ 'p-invalid': submitted && !nasabah.Kode })} />
+                            {submitted && !nasabah.Kode && <small className="p-invalid">Kode wajib diisi.</small>}
                         </div>
                         <div className="field">
-                            <label htmlFor="address">Alamat</label>
-                            <InputText id="address" value={member.address} onChange={(e) => onInputChange(e, 'address')} required className={classNames({ 'p-invalid': submitted && !member.address })} />
-                            {submitted && !member.address && <small className="p-invalid">Alamat wajib diisi.</small>}
+                            <label htmlFor="Tgl">Tanggal</label>
+                            <Calendar id="Tgl" value={nasabah.Tgl} onChange={(e) => onDateChange(e, 'Tgl')} dateFormat="dd/mm/yy" mask="99/99/9999" showIcon />
                         </div>
                         <div className="field">
-                            <label htmlFor="city">Kota</label>
-                            <InputText id="city" value={member.city} onChange={(e) => onInputChange(e, 'city')} required className={classNames({ 'p-invalid': submitted && !member.city })} />
-                            {submitted && !member.city && <small className="p-invalid">Kota wajib diisi.</small>}
+                            <label htmlFor="KodeLama">Kode Lama</label>
+                            <InputText id="KodeLama" value={nasabah.KodeLama} onChange={(e) => onInputChange(e, 'KodeLama')} />
                         </div>
                         <div className="field">
-                            <label htmlFor="state">Provinsi</label>
-                            <InputText id="state" value={member.state} onChange={(e) => onInputChange(e, 'state')} required className={classNames({ 'p-invalid': submitted && !member.state })} />
-                            {submitted && !member.state && <small className="p-invalid">Provinsi wajib diisi.</small>}
+                            <label htmlFor="TglLahir">Tanggal Lahir</label>
+                            <Calendar id="TglLahir" value={nasabah.TglLahir} onChange={(e) => onDateChange(e, 'TglLahir')} dateFormat="dd/mm/yy" mask="99/99/9999" showIcon />
                         </div>
                         <div className="field">
-                            <label htmlFor="postal_code">Kode Pos</label>
-                            <InputText id="postal_code" value={member.postal_code} onChange={(e) => onInputChange(e, 'postal_code')} required className={classNames({ 'p-invalid': submitted && !member.postal_code })} />
-                            {submitted && !member.postal_code && <small className="p-invalid">Kode Pos wajib diisi.</small>}
+                            <label htmlFor="TempatLahir">Tempat Lahir</label>
+                            <InputText id="TempatLahir" value={nasabah.TempatLahir} onChange={(e) => onInputChange(e, 'TempatLahir')} />
                         </div>
                         <div className="field">
-                            <label htmlFor="latitude">Latitude</label>
-                            <InputText id="latitude" value={member.latitude} onChange={(e) => onInputChange(e, 'latitude')} />
+                            <label htmlFor="StatusPerkawinan">Status Perkawinan</label>
+                            <Dropdown id="StatusPerkawinan" value={nasabah.StatusPerkawinan} options={statusPerkawinanOptions} onChange={(e) => onInputChange(e, 'StatusPerkawinan')} placeholder="Pilih Status Perkawinan" />
                         </div>
                         <div className="field">
-                            <label htmlFor="longitude">Longitude</label>
-                            <InputText id="longitude" value={member.longitude} onChange={(e) => onInputChange(e, 'longitude')} />
+                            <label htmlFor="KTP">KTP</label>
+                            <InputText id="KTP" value={nasabah.KTP} onChange={(e) => onInputChange(e, 'KTP')} />
                         </div>
                         <div className="field">
-                            <label htmlFor="status">Status</label>
-                            <Dropdown id="status" value={member.status} options={statusOptions} onChange={(e) => onInputChange(e, 'status')} placeholder="Select a Status" required className={classNames({ 'p-invalid': submitted && !member.status })} />
-                            {submitted && !member.status && <small className="p-invalid">Status wajib diisi.</small>}
+                            <label htmlFor="Agama">Agama</label>
+                            <InputText id="Agama" value={nasabah.Agama} onChange={(e) => onInputChange(e, 'Agama')} />
                         </div>
                         <div className="field">
-                            <label htmlFor="avatar">Avatar</label>
-                            <Image className="block" src={member.avatar instanceof File ? URL.createObjectURL(member.avatar) : member.avatar} alt="Avatar" width="100" height="100" preview />
-                            <InputText id="avatar" type="file" onChange={(e) => onFileChange(e)} accept="image/*" />
+                            <label htmlFor="Alamat">Alamat</label>
+                            <InputText id="Alamat" value={nasabah.Alamat} onChange={(e) => onInputChange(e, 'Alamat')} />
+                        </div>
+                        <div className="field">
+                            <label htmlFor="Telepon">Telepon</label>
+                            <InputText id="Telepon" value={nasabah.Telepon} onChange={(e) => onInputChange(e, 'Telepon')} />
+                        </div>
+                        <div className="field">
+                            <label htmlFor="Email">Email</label>
+                            <InputText id="Email" value={nasabah.Email} onChange={(e) => onInputChange(e, 'Email')} />
                         </div>
                     </Dialog>
 
-                    <Dialog visible={deleteMemberDialog} style={{ width: '450px' }} header="Confirm" modal footer={deleteMemberDialogFooter} onHide={hideDeleteMemberDialog}>
+                    <Dialog visible={deleteNasabahDialog} style={{ width: '450px' }} header="Confirm" modal footer={deleteNasabahDialogFooter} onHide={hideDeleteNasabahDialog}>
                         <div className="flex align-items-center justify-content-center">
                             <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem' }} />
-                            {member && (
+                            {nasabah && (
                                 <span>
-                                    Apakah Anda yakin ingin menghapus data <b>{member.name}</b>?
+                                    Apakah Anda yakin ingin menghapus data nasabah <b>{nasabah.Nama}</b>?
                                 </span>
                             )}
                         </div>
                     </Dialog>
 
-                    <Dialog visible={deleteMembersDialog} style={{ width: '450px' }} header="Confirm" modal footer={deleteMembersDialogFooter} onHide={hideDeleteMembersDialog}>
+                    <Dialog visible={deleteNasabahsDialog} style={{ width: '450px' }} header="Confirm" modal footer={deleteNasabahsDialogFooter} onHide={hideDeleteNasabahsDialog}>
                         <div className="flex align-items-center justify-content-center">
                             <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem' }} />
-                            {selectedMembers && <span>Apakah Anda yakin ingin menghapus data-data anggota terpilih?</span>}
+                            {selectedNasabahs && <span>Apakah Anda yakin ingin menghapus data-data nasabah terpilih?</span>}
                         </div>
                     </Dialog>
                 </div>
@@ -370,4 +361,4 @@ const MemberCrud = () => {
     );
 };
 
-export default MemberCrud;
+export default NasabahCrud;

@@ -18,17 +18,22 @@ const AppMenu = () => {
         {
             label: 'Transaksi',
             items: [
-                { label: 'Setoran', icon: 'pi pi-fw pi-download', to: '/deposits' },
-                { label: 'Penarikan', icon: 'pi pi-fw pi-upload', to: '/withdrawals' },
-                { label: 'Angsuran', icon: 'pi pi-fw pi-refresh', to: '/installments' },
+                // { label: 'Setoran', icon: 'pi pi-fw pi-download', to: '/deposits' },
+                // { label: 'Penarikan', icon: 'pi pi-fw pi-upload', to: '/withdrawals' },
+                // { label: 'Angsuran', icon: 'pi pi-fw pi-refresh', to: '/installments' },
+                { label: 'Mutasi', icon: 'pi pi-fw pi-download', to: '/mutasi' },
+                { label: 'Angsuran', icon: 'pi pi-fw pi-refresh', to: '/angsuran' },
             ]
         },
         {
             label: 'Data',
             items: [
-                { label: 'Pinjaman', icon: 'pi pi-fw pi-money-bill', to: '/debts' },
-                { label: 'Rekening Anggota', icon: 'pi pi-fw pi-inbox', to: '/balances' },
-                { label: 'Anggota', icon: 'pi pi-fw pi-users', to: '/members' },
+                // { label: 'Pinjaman', icon: 'pi pi-fw pi-money-bill', to: '/debts' },
+                // { label: 'Rekening Anggota', icon: 'pi pi-fw pi-inbox', to: '/balances' },
+                // { label: 'Anggota', icon: 'pi pi-fw pi-users', to: '/members' },
+                { label: 'Tabungan', icon: 'pi pi-fw pi-inbox', to: '/tabungan' },
+                { label: 'Debitur', icon: 'pi pi-fw pi-users', to: '/debitur' },
+                { label: 'Nasabah', icon: 'pi pi-fw pi-users', to: '/members' },
                 { label: 'Karyawan', icon: 'pi pi-fw pi-users', to: '/users' },
             ]
         },

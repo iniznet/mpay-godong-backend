@@ -7,9 +7,15 @@ use App\Http\Controllers\DebtController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\BalanceController;
+use App\Http\Controllers\DebiturController;
 use App\Http\Controllers\DepositController;
+use App\Http\Controllers\NasabahController;
+use App\Http\Controllers\AngsuranController;
+use App\Http\Controllers\TabunganController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\WithdrawalController;
 use App\Http\Controllers\InstallmentController;
+use App\Http\Controllers\MutasiTabunganController;
 
 Route::controller(AuthController::class)->group(function () {
     Route::post('login', 'login');
@@ -43,4 +49,35 @@ Route::middleware('auth:api')->group(function () {
 
     Route::apiResource('installments', InstallmentController::class);
     Route::post('installments/delete-multiple', [InstallmentController::class, 'destroyMultiple']);
+
+    Route::apiResource('nasabah', NasabahController::class);
+    Route::post('nasabah/delete-multiple', [NasabahController::class, 'destroyMultiple']);
+
+    Route::apiResource('tabungan', TabunganController::class);
+    Route::post('tabungan/delete-multiple', [TabunganController::class, 'destroyMultiple']);
+
+    Route::get('debitur/next-faktur', [DebiturController::class, 'getNextFaktur']);
+    Route::apiResource('debitur', DebiturController::class);
+    Route::post('debitur/delete-multiple', [DebiturController::class, 'destroyMultiple']);
+
+    Route::get('mutasi-tabungan/next-faktur', [MutasiTabunganController::class, 'getNextFaktur']);
+    Route::apiResource('mutasi-tabungan', MutasiTabunganController::class);
+    Route::post('mutasi-tabungan/delete-multiple', [MutasiTabunganController::class, 'destroyMultiple']);
+
+    Route::get('angsuran/next-faktur', [AngsuranController::class, 'getNextFaktur']);
+    Route::apiResource('angsuran', AngsuranController::class);
+    Route::post('angsuran/delete-multiple', [AngsuranController::class, 'destroyMultiple']);
+
+    Route::prefix('dashboard')->group(function () {
+        Route::get('/data', [DashboardController::class, 'getDashboardData']);
+        Route::get('/nasabah-count', [DashboardController::class, 'getNasabahCount']);
+        Route::get('/tabungan-total', [DashboardController::class, 'getTabunganTotal']);
+        Route::get('/recent-mutasi', [DashboardController::class, 'getRecentMutasi']);
+        Route::get('/debitur-total', [DashboardController::class, 'getDebiturTotal']);
+        Route::get('/angsuran-total', [DashboardController::class, 'getAngsuranTotal']);
+        Route::get('/tabungan-trend', [DashboardController::class, 'getTabunganTrend']);
+        Route::get('/debitur-distribution', [DashboardController::class, 'getDebiturDistribution']);
+        Route::get('/top-nasabah', [DashboardController::class, 'getTopNasabah']);
+        Route::get('/transaction-summary', [DashboardController::class, 'getTransactionSummary']);
+    });
 });
