@@ -90,11 +90,11 @@ const Dashboard = () => {
             const salesData = await DashboardApi.getSalesOverview();
             const notificationsData = await DashboardApi.getNotifications();
 
-            setSummary(summaryData);
-            setRecentTransactions(transactionsData);
-            setTopDebtors(debtorsData);
-            setSalesOverview(salesData);
-            setNotifications(notificationsData);
+            setSummary(summaryData.data);
+            setRecentTransactions(transactionsData.data);
+            setTopDebtors(debtorsData.data);
+            setSalesOverview(salesData.data);
+            setNotifications(notificationsData.data);
         };
 
         fetchDashboardData();
@@ -113,11 +113,11 @@ const Dashboard = () => {
     };
 
     const lineData = {
-        labels: salesOverview.map(item => item.Wilayah),
+        labels: salesOverview?.map(item => item.Wilayah) || [],
         datasets: [
             {
                 label: 'Total Pinjaman',
-                data: salesOverview.map(item => item.TotalPinjaman),
+                data: salesOverview?.map(item => item.TotalPinjaman) || [],
                 fill: false,
                 backgroundColor: '#2f4860',
                 borderColor: '#2f4860',
