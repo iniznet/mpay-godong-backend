@@ -1,138 +1,261 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { Card } from 'primereact/card';
+import React, { useContext, useEffect, useRef, useState } from 'react';
+import { Button } from 'primereact/button';
 import { Chart } from 'primereact/chart';
-import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { DataTable } from 'primereact/datatable';
+import { Menu } from 'primereact/menu';
+import { LayoutContext } from '../../layout/context/layoutcontext';
 import DashboardApi from '@/services/DashboardApi';
 
 const Dashboard = () => {
-    const [nasabahCount, setNasabahCount] = useState(0);
-    const [tabunganTotal, setTabunganTotal] = useState(0);
-    const [recentMutasi, setRecentMutasi] = useState([]);
-    const [debiturTotal, setDebiturTotal] = useState(0);
-    const [angsuranTotal, setAngsuranTotal] = useState(0);
-    const [tabunganTrend, setTabunganTrend] = useState([]);
-    const [debiturDistribution, setDebiturDistribution] = useState([]);
+    const [lineOptions, setLineOptions] = useState({});
+    const { layoutConfig } = useContext(LayoutContext);
+    const menu1 = useRef(null);
+    const menu2 = useRef(null);
+    const [summary, setSummary] = useState({});
+    const [recentTransactions, setRecentTransactions] = useState([]);
+    const [topDebtors, setTopDebtors] = useState([]);
+    const [salesOverview, setSalesOverview] = useState([]);
+    const [notifications, setNotifications] = useState([]);
+
+    const applyLightTheme = () => {
+        const lineOptions = {
+            plugins: {
+                legend: {
+                    labels: {
+                        color: '#495057'
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    ticks: {
+                        color: '#495057'
+                    },
+                    grid: {
+                        color: '#ebedef'
+                    }
+                },
+                y: {
+                    ticks: {
+                        color: '#495057'
+                    },
+                    grid: {
+                        color: '#ebedef'
+                    }
+                }
+            }
+        };
+        setLineOptions(lineOptions);
+    };
+
+    const applyDarkTheme = () => {
+        const lineOptions = {
+            plugins: {
+                legend: {
+                    labels: {
+                        color: '#ebedef'
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    ticks: {
+                        color: '#ebedef'
+                    },
+                    grid: {
+                        color: 'rgba(160, 167, 181, .3)'
+                    }
+                },
+                y: {
+                    ticks: {
+                        color: '#ebedef'
+                    },
+                    grid: {
+                        color: 'rgba(160, 167, 181, .3)'
+                    }
+                }
+            }
+        };
+        setLineOptions(lineOptions);
+    };
 
     useEffect(() => {
+        const fetchDashboardData = async () => {
+            const summaryData = await DashboardApi.getSummary();
+            const transactionsData = await DashboardApi.getRecentTransactions();
+            const debtorsData = await DashboardApi.getTopProducts();
+            const salesData = await DashboardApi.getSalesOverview();
+            const notificationsData = await DashboardApi.getNotifications();
+
+            setSummary(summaryData);
+            setRecentTransactions(transactionsData);
+            setTopDebtors(debtorsData);
+            setSalesOverview(salesData);
+            setNotifications(notificationsData);
+        };
+
         fetchDashboardData();
     }, []);
 
-    const fetchDashboardData = async () => {
-        try {
-            const [
-                nasabahCountRes,
-                tabunganTotalRes,
-                recentMutasiRes,
-                debiturTotalRes,
-                angsuranTotalRes,
-                tabunganTrendRes,
-                debiturDistributionRes
-            ] = await Promise.all([
-                DashboardApi.getNasabahCount(),
-                DashboardApi.getTabunganTotal(),
-                DashboardApi.getRecentMutasi(),
-                DashboardApi.getDebiturTotal(),
-                DashboardApi.getAngsuranTotal(),
-                DashboardApi.getTabunganTrend(),
-                DashboardApi.getDebiturDistribution()
-            ]);
-
-            setNasabahCount(nasabahCountRes.data);
-            setTabunganTotal(tabunganTotalRes.data);
-            setRecentMutasi(recentMutasiRes.data);
-            setDebiturTotal(debiturTotalRes.data);
-            setAngsuranTotal(angsuranTotalRes.data);
-            setTabunganTrend(tabunganTrendRes.data);
-            setDebiturDistribution(debiturDistributionRes.data);
-        } catch (error) {
-            console.error('Error fetching dashboard data:', error);
+    useEffect(() => {
+        if (layoutConfig.colorScheme === 'light') {
+            applyLightTheme();
+        } else {
+            applyDarkTheme();
         }
-    };
+    }, [layoutConfig.colorScheme]);
 
     const formatCurrency = (value) => {
-        return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(value);
+        return value?.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' });
     };
 
-    const tabunganTrendOptions = {
-        responsive: true,
-        plugins: {
-            legend: {
-                position: 'top',
-            },
-            title: {
-                display: true,
-                text: 'Tabungan Trend',
-            },
-        },
+    const lineData = {
+        labels: salesOverview.map(item => item.Wilayah),
+        datasets: [
+            {
+                label: 'Total Pinjaman',
+                data: salesOverview.map(item => item.TotalPinjaman),
+                fill: false,
+                backgroundColor: '#2f4860',
+                borderColor: '#2f4860',
+                tension: 0.4
+            }
+        ]
     };
 
     return (
         <div className="grid">
             <div className="col-12 lg:col-6 xl:col-3">
-                <Card title="Total Nasabah" className="mb-0">
-                    <div className="text-center">
-                        <span className="text-5xl font-bold">{nasabahCount}</span>
+                <div className="card mb-0">
+                    <div className="flex justify-content-between mb-3">
+                        <div>
+                            <span className="block text-500 font-medium mb-3">Nasabah</span>
+                            <div className="text-900 font-medium text-xl">{summary.totalNasabah}</div>
+                        </div>
+                        <div className="flex align-items-center justify-content-center bg-blue-100 border-round" style={{ width: '2.5rem', height: '2.5rem' }}>
+                            <i className="pi pi-user text-blue-500 text-xl" />
+                        </div>
                     </div>
-                </Card>
+                    <span className="text-green-500 font-medium">{summary.newNasabah} baru </span>
+                    <span className="text-500">sejak bulan lalu</span>
+                </div>
             </div>
             <div className="col-12 lg:col-6 xl:col-3">
-                <Card title="Total Tabungan" className="mb-0">
-                    <div className="text-center">
-                        <span className="text-5xl font-bold">{formatCurrency(tabunganTotal)}</span>
+                <div className="card mb-0">
+                    <div className="flex justify-content-between mb-3">
+                        <div>
+                            <span className="block text-500 font-medium mb-3">Total Tabungan</span>
+                            <div className="text-900 font-medium text-xl">{formatCurrency(summary.totalTabungan)}</div>
+                        </div>
+                        <div className="flex align-items-center justify-content-center bg-orange-100 border-round" style={{ width: '2.5rem', height: '2.5rem' }}>
+                            <i className="pi pi-map-marker text-orange-500 text-xl" />
+                        </div>
                     </div>
-                </Card>
+                    <span className="text-green-500 font-medium">{formatCurrency(summary.newTabungan)} </span>
+                    <span className="text-500">sejak bulan lalu</span>
+                </div>
             </div>
             <div className="col-12 lg:col-6 xl:col-3">
-                <Card title="Total Debitur" className="mb-0">
-                    <div className="text-center">
-                        <span className="text-5xl font-bold">{formatCurrency(debiturTotal)}</span>
+                <div className="card mb-0">
+                    <div className="flex justify-content-between mb-3">
+                        <div>
+                            <span className="block text-500 font-medium mb-3">Total Debitur</span>
+                            <div className="text-900 font-medium text-xl">{summary.totalDebitur}</div>
+                        </div>
+                        <div className="flex align-items-center justify-content-center bg-cyan-100 border-round" style={{ width: '2.5rem', height: '2.5rem' }}>
+                            <i className="pi pi-inbox text-cyan-500 text-xl" />
+                        </div>
                     </div>
-                </Card>
+                    <span className="text-green-500 font-medium">{summary.newDebitur} </span>
+                    <span className="text-500">baru bulan ini</span>
+                </div>
             </div>
             <div className="col-12 lg:col-6 xl:col-3">
-                <Card title="Total Angsuran" className="mb-0">
-                    <div className="text-center">
-                        <span className="text-5xl font-bold">{formatCurrency(angsuranTotal)}</span>
+                <div className="card mb-0">
+                    <div className="flex justify-content-between mb-3">
+                        <div>
+                            <span className="block text-500 font-medium mb-3">Total Angsuran</span>
+                            <div className="text-900 font-medium text-xl">{formatCurrency(summary.totalAngsuran)}</div>
+                        </div>
+                        <div className="flex align-items-center justify-content-center bg-purple-100 border-round" style={{ width: '2.5rem', height: '2.5rem' }}>
+                            <i className="pi pi-comment text-purple-500 text-xl" />
+                        </div>
                     </div>
-                </Card>
+                    <span className="text-green-500 font-medium">{formatCurrency(summary.newAngsuran)} </span>
+                    <span className="text-500">bulan ini</span>
+                </div>
             </div>
 
             <div className="col-12 xl:col-6">
-                <Card title="Tabungan Trend">
-                    <Chart type="line" data={tabunganTrend} options={tabunganTrendOptions} />
-                </Card>
-            </div>
-
-            <div className="col-12 xl:col-6">
-                <Card title="Debitur Distribution">
-                    <ResponsiveContainer width="100%" height={300}>
-                        <BarChart data={debiturDistribution}>
-                            <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey="name" />
-                            <YAxis />
-                            <Tooltip />
-                            <Legend />
-                            <Bar dataKey="value" fill="#8884d8" />
-                        </BarChart>
-                    </ResponsiveContainer>
-                </Card>
-            </div>
-
-            <div className="col-12">
-                <Card title="Recent Mutasi Tabungan">
-                    <DataTable value={recentMutasi} paginator rows={5} className="p-datatable-customers">
-                        <Column field="Tgl" header="Tanggal" />
+                <div className="card">
+                    <h5>Transaksi Terbaru</h5>
+                    <DataTable value={recentTransactions} rows={5} paginator responsiveLayout="scroll">
+                        <Column field="Tgl" header="Tanggal" body={(data) => new Date(data.Tgl).toLocaleDateString()} />
                         <Column field="Rekening" header="Rekening" />
-                        <Column field="KodeTransaksi" header="Kode Transaksi" />
-                        <Column field="DK" header="D/K" />
                         <Column field="Keterangan" header="Keterangan" />
-                        <Column field="Jumlah" header="Jumlah" body={(rowData) => formatCurrency(rowData.Jumlah)} />
+                        <Column field="Jumlah" header="Jumlah" body={(data) => formatCurrency(data.Jumlah)} />
                     </DataTable>
-                </Card>
+                </div>
+                <div className="card">
+                    <div className="flex justify-content-between align-items-center mb-5">
+                        <h5>Debitur Teratas</h5>
+                        <div>
+                            <Button type="button" icon="pi pi-ellipsis-v" className="p-button-rounded p-button-text p-button-plain" onClick={(event) => menu1.current.toggle(event)} />
+                            <Menu ref={menu1} popup model={[{ label: 'Add New', icon: 'pi pi-fw pi-plus' }, { label: 'Remove', icon: 'pi pi-fw pi-minus' }]} />
+                        </div>
+                    </div>
+                    <ul className="list-none p-0 m-0">
+                        {topDebtors.map((debtor, i) => (
+                            <li key={debtor.ID} className="flex flex-column md:flex-row md:align-items-center md:justify-content-between mb-4">
+                                <div>
+                                    <span className="text-900 font-medium mr-2 mb-1 md:mb-0">{debtor.Rekening}</span>
+                                    <div className="mt-1 text-600">{debtor.NoPengajuan}</div>
+                                </div>
+                                <div className="mt-2 md:mt-0 flex align-items-center">
+                                    <div className="surface-300 border-round overflow-hidden w-10rem lg:w-6rem" style={{ height: '8px' }}>
+                                        <div className={`bg-${['orange', 'cyan', 'pink', 'green', 'indigo'][i]}-500 h-full`} style={{ width: '50%' }} />
+                                    </div>
+                                    <span className="text-orange-500 ml-3 font-medium">{formatCurrency(debtor.SaldoPokok)}</span>
+                                </div>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            </div>
+
+            <div className="col-12 xl:col-6">
+                <div className="card">
+                    <h5>Distribusi Pinjaman per Wilayah</h5>
+                    <Chart type="line" data={lineData} options={lineOptions} />
+                </div>
+
+                <div className="card">
+                    <div className="flex align-items-center justify-content-between mb-4">
+                        <h5>Notifikasi</h5>
+                        <div>
+                            <Button type="button" icon="pi pi-ellipsis-v" className="p-button-rounded p-button-text p-button-plain" onClick={(event) => menu2.current.toggle(event)} />
+                            <Menu ref={menu2} popup model={[{ label: 'Add New', icon: 'pi pi-fw pi-plus' }, { label: 'Remove', icon: 'pi pi-fw pi-minus' }]} />
+                        </div>
+                    </div>
+
+                    <span className="block text-600 font-medium mb-3">TODAY</span>
+                    <ul className="p-0 mx-0 mt-0 mb-4 list-none">
+                        {notifications.map((notification, index) => (
+                            <li key={index} className="flex align-items-center py-2 border-bottom-1 surface-border">
+                                <div className="w-3rem h-3rem flex align-items-center justify-content-center bg-blue-100 border-circle mr-3 flex-shrink-0">
+                                    <i className="pi pi-dollar text-xl text-blue-500" />
+                                </div>
+                                <span className="text-900 line-height-3">
+                                    {notification.title}
+                                    <span className="text-700"> {notification.description}</span>
+                                </span>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
             </div>
         </div>
     );

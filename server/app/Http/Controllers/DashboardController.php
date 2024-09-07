@@ -7,140 +7,85 @@ use App\Models\Tabungan;
 use App\Models\MutasiTabungan;
 use App\Models\Debitur;
 use App\Models\Angsuran;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
-    public function getNasabahCount()
+    public function getSummary()
     {
-        return response()->json(Nasabah::count());
-    }
+        $currentDate = Carbon::now();
+        $lastMonthDate = $currentDate->copy()->subMonth();
 
-    public function getTabunganTotal()
-    {
-        return response()->json(Tabungan::sum('SaldoAkhir'));
-    }
+        $totalNasabah = Nasabah::count();
+        $newNasabah = Nasabah::where('created_at', '>=', $lastMonthDate)->count();
 
-    public function getRecentMutasi()
-    {
-        $recentMutasi = MutasiTabungan::with('tabungan:Rekening,NamaNasabah')
-            ->orderBy('Tgl', 'desc')
-            ->take(10)
-            ->get(['Tgl', 'Rekening', 'KodeTransaksi', 'DK', 'Keterangan', 'Jumlah']);
+        $totalTabungan = Tabungan::sum('SaldoAkhir');
+        $newTabungan = Tabungan::where('created_at', '>=', $lastMonthDate)->sum('SaldoAkhir');
 
-        return response()->json($recentMutasi);
-    }
+        $totalDebitur = Debitur::count();
+        $newDebitur = Debitur::where('created_at', '>=', $lastMonthDate)->count();
 
-    public function getDebiturTotal()
-    {
-        return response()->json(Debitur::sum('SaldoPokok'));
-    }
-
-    public function getAngsuranTotal()
-    {
-        $total = Angsuran::where('Tgl', '>=', Carbon::now()->startOfMonth())
-            ->where('Tgl', '<=', Carbon::now()->endOfMonth())
+        $totalAngsuran = Angsuran::sum('KPokok') + Angsuran::sum('KBunga');
+        $newAngsuran = Angsuran::where('created_at', '>=', $lastMonthDate)
             ->sum(DB::raw('KPokok + KBunga'));
 
-        return response()->json($total);
+        return response()->json([
+            'totalNasabah' => $totalNasabah,
+            'newNasabah' => $newNasabah,
+            'totalTabungan' => $totalTabungan,
+            'newTabungan' => $newTabungan,
+            'totalDebitur' => $totalDebitur,
+            'newDebitur' => $newDebitur,
+            'totalAngsuran' => $totalAngsuran,
+            'newAngsuran' => $newAngsuran,
+        ]);
     }
 
-    public function getTabunganTrend()
+    public function getRecentTransactions()
     {
-        $trend = Tabungan::select(
-            DB::raw('DATE_FORMAT(Tgl, "%Y-%m") as month'),
-            DB::raw('SUM(SaldoAkhir) as total')
-        )
-        ->where('Tgl', '>=', Carbon::now()->subMonths(12))
-        ->groupBy('month')
-        ->orderBy('month')
-        ->get();
+        $recentTransactions = MutasiTabungan::orderBy('Tgl', 'desc')
+            ->take(5)
+            ->get(['ID', 'Tgl', 'Rekening', 'Keterangan', 'Jumlah']);
 
-        $labels = $trend->pluck('month')->map(function ($month) {
-            return Carbon::createFromFormat('Y-m', $month)->format('M Y');
-        });
-
-        $data = [
-            'labels' => $labels,
-            'datasets' => [
-                [
-                    'label' => 'Total Tabungan',
-                    'data' => $trend->pluck('total'),
-                    'fill' => false,
-                    'borderColor' => '#4bc0c0'
-                ]
-            ]
-        ];
-
-        return response()->json($data);
+        return response()->json($recentTransactions);
     }
 
-    public function getDebiturDistribution()
+    public function getTopProducts()
     {
-        $distribution = Debitur::select('Jaminan', DB::raw('COUNT(*) as count'))
-            ->groupBy('Jaminan')
-            ->orderByDesc('count')
+        $topDebtors = Debitur::orderBy('SaldoPokok', 'desc')
+            ->take(5)
+            ->get(['ID', 'Rekening', 'NoPengajuan', 'SaldoPokok']);
+
+        return response()->json($topDebtors);
+    }
+
+    public function getSalesOverview()
+    {
+        $loansByWilayah = Debitur::select('Wilayah', DB::raw('SUM(Plafond) as TotalPinjaman'))
+            ->groupBy('Wilayah')
+            ->orderBy('TotalPinjaman', 'desc')
             ->get();
 
-        $data = $distribution->map(function ($item) {
+        return response()->json($loansByWilayah);
+    }
+
+    public function getNotifications()
+    {
+        // For this example, we'll use recent transactions as notifications
+        // In a real-world scenario, you might have a separate notifications table
+        $recentTransactions = MutasiTabungan::orderBy('Tgl', 'desc')
+            ->take(5)
+            ->get(['Tgl', 'Rekening', 'Keterangan', 'Jumlah']);
+
+        $notifications = $recentTransactions->map(function ($transaction) {
             return [
-                'name' => $item->Jaminan,
-                'value' => $item->count
+                'title' => "Transaksi pada rekening " . $transaction->Rekening,
+                'description' => $transaction->Keterangan . " - Rp " . number_format($transaction->Jumlah, 2),
             ];
         });
 
-        return response()->json($data);
-    }
-
-    public function getTopNasabah()
-    {
-        $topNasabah = Tabungan::with('nasabah:Kode,Nama')
-            ->orderByDesc('SaldoAkhir')
-            ->take(5)
-            ->get(['Kode', 'NamaNasabah', 'SaldoAkhir']);
-
-        return response()->json($topNasabah);
-    }
-
-    public function getTransactionSummary()
-    {
-        $today = Carbon::today();
-        $startOfWeek = Carbon::now()->startOfWeek();
-        $startOfMonth = Carbon::now()->startOfMonth();
-
-        $summary = [
-            'today' => MutasiTabungan::whereDate('Tgl', $today)->count(),
-            'thisWeek' => MutasiTabungan::where('Tgl', '>=', $startOfWeek)->count(),
-            'thisMonth' => MutasiTabungan::where('Tgl', '>=', $startOfMonth)->count(),
-        ];
-
-        return response()->json($summary);
-    }
-
-    public function getDashboardData()
-    {
-        $nasabahCount = $this->getNasabahCount()->original;
-        $tabunganTotal = $this->getTabunganTotal()->original;
-        $recentMutasi = $this->getRecentMutasi()->original;
-        $debiturTotal = $this->getDebiturTotal()->original;
-        $angsuranTotal = $this->getAngsuranTotal()->original;
-        $tabunganTrend = $this->getTabunganTrend()->original;
-        $debiturDistribution = $this->getDebiturDistribution()->original;
-        $topNasabah = $this->getTopNasabah()->original;
-        $transactionSummary = $this->getTransactionSummary()->original;
-
-        return response()->json([
-            'nasabahCount' => $nasabahCount,
-            'tabunganTotal' => $tabunganTotal,
-            'recentMutasi' => $recentMutasi,
-            'debiturTotal' => $debiturTotal,
-            'angsuranTotal' => $angsuranTotal,
-            'tabunganTrend' => $tabunganTrend,
-            'debiturDistribution' => $debiturDistribution,
-            'topNasabah' => $topNasabah,
-            'transactionSummary' => $transactionSummary,
-        ]);
+        return response()->json($notifications);
     }
 }

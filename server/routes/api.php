@@ -69,15 +69,10 @@ Route::middleware('auth:api')->group(function () {
     Route::post('angsuran/delete-multiple', [AngsuranController::class, 'destroyMultiple']);
 
     Route::prefix('dashboard')->group(function () {
-        Route::get('/data', [DashboardController::class, 'getDashboardData']);
-        Route::get('/nasabah-count', [DashboardController::class, 'getNasabahCount']);
-        Route::get('/tabungan-total', [DashboardController::class, 'getTabunganTotal']);
-        Route::get('/recent-mutasi', [DashboardController::class, 'getRecentMutasi']);
-        Route::get('/debitur-total', [DashboardController::class, 'getDebiturTotal']);
-        Route::get('/angsuran-total', [DashboardController::class, 'getAngsuranTotal']);
-        Route::get('/tabungan-trend', [DashboardController::class, 'getTabunganTrend']);
-        Route::get('/debitur-distribution', [DashboardController::class, 'getDebiturDistribution']);
-        Route::get('/top-nasabah', [DashboardController::class, 'getTopNasabah']);
-        Route::get('/transaction-summary', [DashboardController::class, 'getTransactionSummary']);
+        Route::get('/summary', [DashboardController::class, 'getSummary']);
+        Route::get('/recent-transactions', [DashboardController::class, 'getRecentTransactions']);
+        Route::get('/top-products', [DashboardController::class, 'getTopProducts']);
+        Route::get('/sales-overview', [DashboardController::class, 'getSalesOverview']);
+        Route::get('/notifications', [DashboardController::class, 'getNotifications']);
     });
 });
