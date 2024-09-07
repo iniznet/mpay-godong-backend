@@ -107,13 +107,17 @@ const NasabahCrud = () => {
 
         if (nasabah.Nama.trim() && nasabah.Kode.trim()) {
             try {
-                nasabah.Tgl = nasabah.Tgl ? nasabah.Tgl.toISOString().split('T')[0] : null;
+                let nasabahToSave = { ...nasabah };
+
+                // Convert date to ISO string
+                nasabahToSave.Tgl = nasabahToSave.Tgl ? nasabahToSave.Tgl.toISOString().split('T')[0] : null;
+                nasabahToSave.TglLahir = nasabahToSave.TglLahir ? nasabahToSave.TglLahir.toISOString().split('T')[0] : null;
 
                 if (nasabah.ID) {
-                    await NasabahApi.updateNasabah(nasabah.ID, nasabah);
+                    await NasabahApi.updateNasabah(nasabahToSave.ID, nasabahToSave);
                     toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Data nasabah berhasil diubah', life: 3000 });
                 } else {
-                    await NasabahApi.createNasabah(nasabah);
+                    await NasabahApi.createNasabah(nasabahToSave);
                     toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Berhasil menambahkan nasabah baru', life: 3000 });
                 }
 
