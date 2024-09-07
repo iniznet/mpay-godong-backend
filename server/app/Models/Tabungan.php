@@ -13,6 +13,18 @@ class Tabungan extends Model
     protected $primaryKey = 'ID';
     protected $fillable = ['Rekening', 'RekeningLama', 'Tgl', 'Kode', 'NamaNasabah', 'GolonganTabungan', 'StatusBlokir', 'JumlahBlokir', 'TglPenutupan', 'KeteranganBlokir', 'SaldoAkhir', 'Pekerjaan', 'UserName'];
 
+    protected $with = ['nasabah', 'mutasiTabungan'];
+
+    public function nasabah()
+    {
+        return $this->belongsTo(Nasabah::class, 'Kode', 'Kode');
+    }
+
+    public function debitur()
+    {
+        return $this->hasOne(Debitur::class, 'RekeningTabungan', 'Rekening');
+    }
+
     public function mutasiTabungan()
     {
         return $this->hasMany(MutasiTabungan::class, 'Rekening', 'Rekening');

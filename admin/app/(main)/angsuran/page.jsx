@@ -25,9 +25,9 @@ const AngsuranCrud = () => {
     const [submitted, setSubmitted] = useState(false);
     const [globalFilter, setGlobalFilter] = useState('');
     const [loading, setLoading] = useState(false);
-    const [rekeningDialog, setRekeningDialog] = useState(false);
+    const [debiturDialog, setDebiturDialog] = useState(false);
     const [debiturs, setDebiturs] = useState([]);
-    const [rekeningFilter, setRekeningFilter] = useState('');
+    const [debiturFilter, setDebiturFilter] = useState('');
     const toast = useRef(null);
     const dt = useRef(null);
     const [lazyParams, setLazyParams] = useState({
@@ -201,25 +201,27 @@ const AngsuranCrud = () => {
         setAngsuran(_angsuran);
     };
 
-    const openRekeningDialog = async () => {
+    const openDebiturDialog = async () => {
         try {
             const response = await DebiturApi.getDebiturs();
             setDebiturs(response.data.data || []);
-            setRekeningDialog(true);
+            setDebiturDialog(true);
         } catch (error) {
             console.error('Error loading debiturs:', error);
             toast.current.show({ severity: 'error', summary: 'Error', detail: 'Terjadi kesalahan saat memuat data debitur', life: 3000 });
         }
     };
 
-    const hideRekeningDialog = () => {
-        setRekeningDialog(false);
-        setRekeningFilter('');
+    const hideDebiturDialog = () => {
+        setDebiturDialog(false);
+        setDebiturFilter('');
     };
 
-    const onRekeningSelect = (debitur) => {
-        setAngsuran({ ...angsuran, Rekening: debitur.Rekening });
-        hideRekeningDialog();
+    const onDebiturSelect = (debitur) => {
+        let _angsuran = { ...angsuran };
+        _angsuran.Rekening = debitur.Rekening;
+        setAngsuran(_angsuran);
+        hideDebiturDialog();
     };
 
     const actionBodyTemplate = (rowData) => {
@@ -262,11 +264,11 @@ const AngsuranCrud = () => {
         </div>
     );
 
-    const rekeningHeader = (
+    const debiturHeader = (
         <div className="flex flex-column">
             <span className="block mt-2 md:mt-0 p-input-icon-left">
                 <i className="pi pi-search" />
-                <InputText type="search" onInput={(e) => setRekeningFilter(e.target.value)} placeholder="Cari rekening..." />
+                <InputText type="search" onInput={(e) => setDebiturFilter(e.target.value)} placeholder="Cari rekening debitur..." />
             </span>
         </div>
     );
@@ -357,7 +359,7 @@ const AngsuranCrud = () => {
                             <label htmlFor="Rekening">Rekening</label>
                             <div className="p-inputgroup">
                                 <InputText id="Rekening" value={angsuran.Rekening} onChange={(e) => onInputChange(e, 'Rekening')} maxLength={15} />
-                                <Button icon="pi pi-search" className="p-button-warning" onClick={openRekeningDialog} />
+                                <Button icon="pi pi-search" className="p-button-warning" onClick={openDebiturDialog} />
                             </div>
                         </div>
                         <div className="field">
@@ -425,19 +427,31 @@ const AngsuranCrud = () => {
                         </div>
                     </Dialog>
 
-                    <Dialog visible={rekeningDialog} style={{ width: '450px' }} header="Pilih Rekening" modal className="p-fluid" onHide={hideRekeningDialog}>
+                    <Dialog visible={debiturDialog} style={{ width: '100%', maxWidth: '1280px' }} header="Pilih Rekening" modal className="p-fluid" onHide={hideDebiturDialog}>
                         <DataTable
-                            value={debiturs}
+                            value={debiturs.filter(debitur => {
+                                return debitur.Rekening.toLowerCase().includes(debiturFilter.toLowerCase()) || debitur.NamaNasabah.toLowerCase().includes(debiturFilter.toLowerCase());
+                            })}
                             paginator
                             rows={5}
                             rowsPerPageOptions={[5, 10, 25]}
                             scrollable
                             scrollHeight="200px"
-                            globalFilter={rekeningFilter}
-                            header={rekeningHeader}
-                            emptyMessage="No debiturs found."
+                            header={debiturHeader}
+                            emptyMessage="No rekenings found."
                         >
-                            <Column field="Rekening" header="Rekening" body={(rowData) => <Button label={rowData.Rekening} className="p-button-link" onClick={() => onRekeningSelect(rowData)} />} />
+                            <Column field="Rekening" header="Rekening" sortable body={(rowData) => <span>{rowData.Rekening}</span>} headerStyle={{ minWidth: '15rem' }}></Column>
+                            <Column field="NamaNasabah" header="Nama" sortable body={(rowData) => <span>{rowData.tabungan.NamaNasabah}</span>} headerStyle={{ minWidth: '15rem' }}></Column>
+                            <Column
+                                body={(rowData) => (
+                                    <Button
+                                        label="Pilih"
+                                        icon="pi pi-check"
+                                        onClick={() => onDebiturSelect(rowData)}
+                                    />
+                                )}
+                                headerStyle={{ minWidth: '10rem' }}
+                            ></Column>
                         </DataTable>
                     </Dialog>
                 </div>

@@ -13,11 +13,6 @@ class Nasabah extends Model
     protected $primaryKey = 'ID';
     protected $fillable = ['CabangEntry', 'Nama', 'Kode', 'Tgl', 'KodeLama', 'TglLahir', 'TempatLahir', 'StatusPerkawinan', 'KTP', 'Agama', 'Alamat', 'Telepon', 'Email'];
 
-    public function debitur()
-    {
-        return $this->hasMany(Debitur::class, 'Kode', 'Kode');
-    }
-
     public function tabungan()
     {
         return $this->hasMany(Tabungan::class, 'Kode', 'Kode');
