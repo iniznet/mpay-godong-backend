@@ -73,7 +73,14 @@ const NasabahCrud = () => {
                 sort_order: lazyParams.sortOrder,
                 search: globalFilter
             });
-            setNasabahs(response.data.data);
+
+            const formattedData = response.data.data.map(nasabah => ({
+                ...nasabah,
+                Tgl: nasabah.Tgl ? new Date(nasabah.Tgl) : null,
+                TglLahir: nasabah.TglLahir ? new Date(nasabah.TglLahir) : null
+            }));
+
+            setNasabahs(formattedData);
             setTotalRecords(response.data.total);
             setLoading(false);
         } catch (error) {
@@ -132,7 +139,11 @@ const NasabahCrud = () => {
     };
 
     const editNasabah = (nasabah) => {
-        setNasabah({ ...nasabah });
+        setNasabah({
+            ...nasabah,
+            Tgl: nasabah.Tgl ? new Date(nasabah.Tgl) : null,
+            TglLahir: nasabah.TglLahir ? new Date(nasabah.TglLahir) : null
+        });
         setNasabahDialog(true);
     };
 
@@ -184,7 +195,11 @@ const NasabahCrud = () => {
 
     const onDateChange = (e, name) => {
         let _nasabah = { ...nasabah };
-        _nasabah[`${name}`] = e.value;
+        const localDate = e.value;
+
+        // Convert to UTC+7 manually
+        const adjustedDate = new Date(localDate.getTime() - (localDate.getTimezoneOffset() * 60000) + (7 * 3600000));
+        _nasabah[`${name}`] = adjustedDate;
         setNasabah(_nasabah);
     };
 
