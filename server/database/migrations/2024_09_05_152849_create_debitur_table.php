@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('debitur', function (Blueprint $table) {
             $table->id('ID');
+            $table->string('Kode', 12)->nullable();
             $table->string('Faktur', 20)->nullable();
             $table->string('Rekening', 15);
             $table->string('RekeningLama', 30)->nullable();

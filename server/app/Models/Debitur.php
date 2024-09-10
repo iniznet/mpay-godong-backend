@@ -11,9 +11,14 @@ class Debitur extends Model
 
     protected $table = 'debitur';
     protected $primaryKey = 'ID';
-    protected $fillable = ['Faktur', 'Rekening', 'RekeningLama', 'Tgl', 'StatusPencairan', 'NoPengajuan', 'RekeningJaminan', 'Jaminan', 'KeteranganJaminan', 'Wilayah', 'SukuBunga', 'Plafond', 'PencairanPokok', 'TotalBunga', 'SaldoPokok', 'SaldoBunga', 'SaldoTitipan', 'RekeningTabungan', 'DateTime', 'UserName'];
+    protected $fillable = ['Kode', 'Faktur', 'Rekening', 'RekeningLama', 'Tgl', 'StatusPencairan', 'NoPengajuan', 'RekeningJaminan', 'Jaminan', 'KeteranganJaminan', 'Wilayah', 'SukuBunga', 'Plafond', 'PencairanPokok', 'TotalBunga', 'SaldoPokok', 'SaldoBunga', 'SaldoTitipan', 'RekeningTabungan', 'DateTime', 'UserName'];
 
-    protected $with = ['tabungan'];
+    protected $with = ['nasabah'];
+
+    public function nasabah()
+    {
+        return $this->belongsTo(Nasabah::class, 'Kode', 'Kode');
+    }
 
     public function angsuran()
     {

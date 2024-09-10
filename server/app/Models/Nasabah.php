@@ -17,4 +17,9 @@ class Nasabah extends Model
     {
         return $this->hasMany(Tabungan::class, 'Kode', 'Kode');
     }
+
+    public function debitur()
+    {
+        return $this->hasMany(Debitur::class, 'Kode', 'Kode');
+    }
 }

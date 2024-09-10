@@ -14,6 +14,7 @@ class DebiturRequest extends FormRequest
     public function rules()
     {
         return [
+            'Kode' => 'nullable|string|max:12',
             'Faktur' => 'nullable|string|max:20',
             'Rekening' => 'required|string|max:15',
             'RekeningLama' => 'nullable|string|max:30',

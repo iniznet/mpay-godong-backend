@@ -14,6 +14,7 @@ import { classNames } from 'primereact/utils';
 import DebiturApi from '@/services/DebiturApi';
 import { Toolbar } from 'primereact/toolbar';
 import TabunganApi from '@/services/TabunganApi';
+import NasabahApi from '@/services/NasabahApi';
 
 const DebiturCrud = () => {
     const [debiturs, setDebiturs] = useState(null);
@@ -39,6 +40,9 @@ const DebiturCrud = () => {
     const [rekeningDialog, setRekeningDialog] = useState(false);
     const [rekenings, setRekenings] = useState([]);
     const [rekeningFilter, setRekeningFilter] = useState('');
+    const [nasabahDialog, setNasabahDialog] = useState(false);
+    const [nasabahs, setNasabahs] = useState([]);
+    const [nasabahFilter, setNasabahFilter] = useState('');
 
 
     useEffect(() => {
@@ -48,6 +52,7 @@ const DebiturCrud = () => {
     function initEmptyDebitur() {
         return {
             ID: null,
+            Kode: '',
             Faktur: '',
             Rekening: '',
             RekeningLama: '',
@@ -227,6 +232,27 @@ const DebiturCrud = () => {
         hideRekeningDialog();
     };
 
+    const openNasabahDialog = async () => {
+        try {
+            const response = await NasabahApi.getNasabahs();
+            setNasabahs(response.data.data || []);
+            setNasabahDialog(true);
+        } catch (error) {
+            console.error('Error loading nasabahs:', error);
+            toast.current.show({ severity: 'error', summary: 'Error', detail: 'Terjadi kesalahan saat memuat data nasabah', life: 3000 });
+        }
+    };
+
+    const hideNasabahDialog = () => {
+        setNasabahDialog(false);
+        setNasabahFilter('');
+    };
+
+    const onNasabahSelect = (nasabah) => {
+        setDebitur({ ...debitur, Kode: nasabah.Kode });
+        hideNasabahDialog();
+    };
+
     const actionBodyTemplate = (rowData) => {
         return (
             <React.Fragment>
@@ -272,6 +298,15 @@ const DebiturCrud = () => {
             <span className="block mt-2 md:mt-0 p-input-icon-left">
                 <i className="pi pi-search" />
                 <InputText type="search" onInput={(e) => setRekeningFilter(e.target.value)} placeholder="Cari rekening..." />
+            </span>
+        </div>
+    );
+
+    const nasabahHeader = (
+        <div className="flex flex-column">
+            <span className="block mt-2 md:mt-0 p-input-icon-left">
+                <i className="pi pi-search" />
+                <InputText type="search" onInput={(e) => setNasabahFilter(e.target.value)} placeholder="Cari nasabah..." />
             </span>
         </div>
     );
@@ -337,6 +372,13 @@ const DebiturCrud = () => {
                     </DataTable>
 
                     <Dialog visible={debiturDialog} style={{ width: '450px' }} header="Detail Debitur" modal className="p-fluid" footer={debiturDialogFooter} onHide={hideDialog}>
+                        <div className="field">
+                            <label htmlFor="Kode">Nasabah</label>
+                            <div className="p-inputgroup">
+                                <InputText id="Kode" value={debitur.Kode} onChange={(e) => onInputChange(e, 'Kode')} maxLength={15} />
+                                <Button icon="pi pi-search" className="p-button-warning" onClick={openNasabahDialog} />
+                            </div>
+                        </div>
                         <div className="field">
                             <label htmlFor="Rekening">Rekening</label>
                             <InputText id="Rekening" value={debitur.Rekening} onChange={(e) => onInputChange(e, 'Rekening')} required autoFocus className={classNames({ 'p-invalid': submitted && !debitur.Rekening })} />
@@ -409,7 +451,6 @@ const DebiturCrud = () => {
                         </div>
                         <div className="field">
                             <label htmlFor="RekeningTabungan">Rekening Tabungan</label>
-                            {/* <InputText id="RekeningTabungan" value={debitur.RekeningTabungan} onChange={(e) => onInputChange(e, 'RekeningTabungan')} /> */}
                             <div className="p-inputgroup">
                                 <InputText id="RekeningTabungan" value={debitur.RekeningTabungan} onChange={(e) => onInputChange(e, 'RekeningTabungan')} maxLength={15} />
                                 <Button icon="pi pi-search" className="p-button-warning" onClick={openRekeningDialog} />
@@ -449,6 +490,37 @@ const DebiturCrud = () => {
                                 </span>
                             )}
                         </div>
+                    </Dialog>
+
+                    <Dialog visible={nasabahDialog} style={{ width: '100%', maxWidth: '1280px' }} header="Pilih Nasabah" modal className="p-fluid" onHide={hideNasabahDialog}>
+                        <DataTable
+                            value={nasabahs.filter(nasabah => {
+                                return nasabah.Kode.toLowerCase().includes(nasabahFilter.toLowerCase()) || nasabah.Nama.toLowerCase().includes(nasabahFilter.toLowerCase());
+                            })}
+                            paginator
+                            rows={5}
+                            rowsPerPageOptions={[5, 10, 25]}
+                            scrollable
+                            scrollHeight="200px"
+                            header={nasabahFilter}
+                            emptyMessage="No nasabahs found."
+                        >
+                            <Column field="Kode" header="Kode" sortable body={(rowData) => <span>{rowData.Kode}</span>} headerStyle={{ minWidth: '15rem' }}></Column>
+                            <Column field="Nama" header="Nama" sortable body={(rowData) => <span>{rowData.Nama}</span>} headerStyle={{ minWidth: '15rem' }}></Column>
+                            <Column field="KTP" header="KTP" sortable body={(rowData) => <span>{rowData.KTP}</span>} headerStyle={{ minWidth: '15rem' }}></Column>
+                            <Column field="Telepon" header="Telepon" sortable body={(rowData) => <span>{rowData.Telepon}</span>} headerStyle={{ minWidth: '15rem' }}></Column>
+                            <Column field="Alamat" header="Alamat" sortable body={(rowData) => <span>{rowData.Alamat}</span>} headerStyle={{ minWidth: '15rem' }}></Column>
+                            <Column
+                                body={(rowData) => (
+                                    <Button
+                                        label="Pilih"
+                                        icon="pi pi-check"
+                                        onClick={() => onNasabahSelect(rowData)}
+                                    />
+                                )}
+                                headerStyle={{ minWidth: '10rem' }}
+                            ></Column>
+                        </DataTable>
                     </Dialog>
 
                     <Dialog visible={rekeningDialog} style={{ width: '100%', maxWidth: '1280px' }} header="Pilih Rekening" modal className="p-fluid" onHide={hideRekeningDialog}>
