@@ -2,9 +2,12 @@
 
 namespace App\Models;
 
+use App\Observers\MutasiTabunganObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+#[ObservedBy(MutasiTabunganObserver::class)]
 class MutasiTabungan extends Model
 {
     use HasFactory;
