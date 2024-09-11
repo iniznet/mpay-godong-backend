@@ -387,7 +387,7 @@ const DebiturCrud = () => {
                                 </div>
                                 <div className="field">
                                     <label htmlFor="Faktur">Faktur</label>
-                                    <InputText id="Faktur" value={debitur.Faktur} onChange={(e) => onInputChange(e, 'Faktur')} />
+                                    <InputText id="Faktur" value={debitur.Faktur} readOnly/>
                                 </div>
                                 <div className="field">
                                     <label htmlFor="RekeningJaminan">Rekening Jaminan</label>

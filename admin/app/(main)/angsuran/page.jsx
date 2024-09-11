@@ -353,7 +353,7 @@ const AngsuranCrud = () => {
                         </div>
                         <div className="field">
                             <label htmlFor="Faktur">Faktur</label>
-                            <InputText id="Faktur" value={angsuran.Faktur} onChange={(e) => onInputChange(e, 'Faktur')} required autoFocus className={classNames({ 'p-invalid': submitted && !angsuran.Faktur })} maxLength={20} />
+                            <InputText id="Faktur" value={angsuran.Faktur} readOnly className={classNames({ 'p-invalid': submitted && !angsuran.Faktur })} maxLength={20} />
                             {submitted && !angsuran.Faktur && <small className="p-invalid">Faktur is required.</small>}
                         </div>
                         <div className="field">

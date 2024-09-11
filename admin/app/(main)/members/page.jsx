@@ -240,10 +240,10 @@ const NasabahCrud = () => {
     );
 
     const nasabahDialogFooter = (
-        <>
-            <Button label="Batal" icon="pi pi-times" text onClick={hideDialog} />
-            <Button label="Simpan" icon="pi pi-check" text onClick={saveNasabah} />
-        </>
+        <React.Fragment>
+            <Button label="Batal" icon="pi pi-times" outlined onClick={hideDialog} />
+            <Button label="Simpan" icon="pi pi-check" onClick={saveNasabah} />
+        </React.Fragment>
     );
 
     const deleteNasabahDialogFooter = (

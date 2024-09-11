@@ -210,10 +210,10 @@ const UserCrud = () => {
     );
 
     const userDialogFooter = (
-        <>
-            <Button label="Batal" icon="pi pi-times" text onClick={hideDialog} />
-            <Button label="Simpan" icon="pi pi-check" text onClick={saveUser} />
-        </>
+        <React.Fragment>
+            <Button label="Batal" icon="pi pi-times" outlined onClick={hideDialog} />
+            <Button label="Simpan" icon="pi pi-check" onClick={saveUser} />
+        </React.Fragment>
     );
 
     const deleteUserDialogFooter = (
@@ -281,7 +281,7 @@ const UserCrud = () => {
                         </div>
                         <div className="field">
                             <label htmlFor="role">Peran</label>
-                            <Dropdown id="role" value={user.role} options={roleOptions} onChange={(e) => onInputChange(e, 'role')} placeholder="Select a Role" required className={classNames({ 'p-invalid': submitted && !user.role })} />
+                            <Dropdown id="role" value={user.role} options={roleOptions} onChange={(e) => onInputChange(e, 'role')} placeholder="Pilih Peran" required className={classNames({ 'p-invalid': submitted && !user.role })} />
                             {submitted && !user.role && <small className="p-invalid">Peran wajib diisi.</small>}
                         </div>
                         <div className="field">
