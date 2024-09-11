@@ -2,7 +2,7 @@ import axios from 'axios';
 import AuthApi from './AuthApi';
 import { removeCookie, setCookie } from 'typescript-cookie';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000/api';
+const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL || 'http://localhost:8000/api';
 const Api = axios.create({
     baseURL: API_BASE_URL,
     headers: {

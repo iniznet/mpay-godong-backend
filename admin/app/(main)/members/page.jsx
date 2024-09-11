@@ -299,61 +299,67 @@ const NasabahCrud = () => {
                         <Column body={actionBodyTemplate} headerStyle={{ minWidth: '10rem' }}></Column>
                     </DataTable>
 
-                    <Dialog visible={nasabahDialog} style={{ width: '450px' }} header="Nasabah Details" modal className="p-fluid" footer={nasabahDialogFooter} onHide={hideDialog}>
-                        <div className="field">
-                            <label htmlFor="CabangEntry">Cabang Entry</label>
-                            <InputText id="CabangEntry" value={nasabah.CabangEntry} onChange={(e) => onInputChange(e, 'CabangEntry')} required className={classNames({ 'p-invalid': submitted && !nasabah.CabangEntry })} />
-                            {submitted && !nasabah.CabangEntry && <small className="p-invalid">Cabang Entry wajib diisi.</small>}
+                    <Dialog visible={nasabahDialog} style={{ width: '80%' }} header="Nasabah Details" modal className="p-fluid" footer={nasabahDialogFooter} onHide={hideDialog}>
+                        <div className="grid">
+                            <div className="col-6">
+                            <div className="field">
+                                <label htmlFor="CabangEntry">Cabang Entry</label>
+                                <InputText id="CabangEntry" value={nasabah.CabangEntry} onChange={(e) => onInputChange(e, 'CabangEntry')} required className={classNames({ 'p-invalid': submitted && !nasabah.CabangEntry })} />
+                                {submitted && !nasabah.CabangEntry && <small className="p-invalid">Cabang Entry wajib diisi.</small>}
+                            </div>
+                            <div className="field">
+                                <label htmlFor="Nama">Nama</label>
+                                <InputText id="Nama" value={nasabah.Nama} onChange={(e) => onInputChange(e, 'Nama')} required autoFocus className={classNames({ 'p-invalid': submitted && !nasabah.Nama })} />
+                                {submitted && !nasabah.Nama && <small className="p-invalid">Nama wajib diisi.</small>}
+                            </div>
+                            <div className="field">
+                                <label htmlFor="Kode">Kode</label>
+                                <InputText id="Kode" value={nasabah.Kode} onChange={(e) => onInputChange(e, 'Kode')} required className={classNames({ 'p-invalid': submitted && !nasabah.Kode })} />
+                                {submitted && !nasabah.Kode && <small className="p-invalid">Kode wajib diisi.</small>}
+                            </div>
+                            <div className="field">
+                                <label htmlFor="Tgl">Tanggal</label>
+                                <Calendar id="Tgl" value={nasabah.Tgl} onChange={(e) => onDateChange(e, 'Tgl')} dateFormat="dd/mm/yy" mask="99/99/9999" showIcon />
+                            </div>
+                            <div className="field">
+                                <label htmlFor="KodeLama">Kode Lama</label>
+                                <InputText id="KodeLama" value={nasabah.KodeLama} onChange={(e) => onInputChange(e, 'KodeLama')} />
+                            </div>
+                            <div className="field">
+                                <label htmlFor="TglLahir">Tanggal Lahir</label>
+                                <Calendar id="TglLahir" value={nasabah.TglLahir} onChange={(e) => onDateChange(e, 'TglLahir')} dateFormat="dd/mm/yy" mask="99/99/9999" showIcon />
+                            </div>
+                            <div className="field">
+                                <label htmlFor="TempatLahir">Tempat Lahir</label>
+                                <InputText id="TempatLahir" value={nasabah.TempatLahir} onChange={(e) => onInputChange(e, 'TempatLahir')} />
+                            </div>
+                            </div>
+                            <div className="col-6">
+                            <div className="field">
+                                <label htmlFor="StatusPerkawinan">Status Perkawinan</label>
+                                <Dropdown id="StatusPerkawinan" value={nasabah.StatusPerkawinan} options={statusPerkawinanOptions} onChange={(e) => onInputChange(e, 'StatusPerkawinan')} placeholder="Pilih Status Perkawinan" />
+                            </div>
+                            <div className="field">
+                                <label htmlFor="KTP">KTP</label>
+                                <InputText id="KTP" value={nasabah.KTP} onChange={(e) => onInputChange(e, 'KTP')} />
+                            </div>
+                            <div className="field">
+                                <label htmlFor="Agama">Agama</label>
+                                <InputText id="Agama" value={nasabah.Agama} onChange={(e) => onInputChange(e, 'Agama')} />
+                            </div>
+                            <div className="field">
+                                <label htmlFor="Alamat">Alamat</label>
+                                <InputText id="Alamat" value={nasabah.Alamat} onChange={(e) => onInputChange(e, 'Alamat')} />
+                            </div>
+                            <div className="field">
+                                <label htmlFor="Telepon">Telepon</label>
+                                <InputText id="Telepon" value={nasabah.Telepon} onChange={(e) => onInputChange(e, 'Telepon')} />
+                            </div>
+                            <div className="field">
+                                <label htmlFor="Email">Email</label>
+                                <InputText id="Email" value={nasabah.Email} onChange={(e) => onInputChange(e, 'Email')} />
+                            </div>
                         </div>
-                        <div className="field">
-                            <label htmlFor="Nama">Nama</label>
-                            <InputText id="Nama" value={nasabah.Nama} onChange={(e) => onInputChange(e, 'Nama')} required autoFocus className={classNames({ 'p-invalid': submitted && !nasabah.Nama })} />
-                            {submitted && !nasabah.Nama && <small className="p-invalid">Nama wajib diisi.</small>}
-                        </div>
-                        <div className="field">
-                            <label htmlFor="Kode">Kode</label>
-                            <InputText id="Kode" value={nasabah.Kode} onChange={(e) => onInputChange(e, 'Kode')} required className={classNames({ 'p-invalid': submitted && !nasabah.Kode })} />
-                            {submitted && !nasabah.Kode && <small className="p-invalid">Kode wajib diisi.</small>}
-                        </div>
-                        <div className="field">
-                            <label htmlFor="Tgl">Tanggal</label>
-                            <Calendar id="Tgl" value={nasabah.Tgl} onChange={(e) => onDateChange(e, 'Tgl')} dateFormat="dd/mm/yy" mask="99/99/9999" showIcon />
-                        </div>
-                        <div className="field">
-                            <label htmlFor="KodeLama">Kode Lama</label>
-                            <InputText id="KodeLama" value={nasabah.KodeLama} onChange={(e) => onInputChange(e, 'KodeLama')} />
-                        </div>
-                        <div className="field">
-                            <label htmlFor="TglLahir">Tanggal Lahir</label>
-                            <Calendar id="TglLahir" value={nasabah.TglLahir} onChange={(e) => onDateChange(e, 'TglLahir')} dateFormat="dd/mm/yy" mask="99/99/9999" showIcon />
-                        </div>
-                        <div className="field">
-                            <label htmlFor="TempatLahir">Tempat Lahir</label>
-                            <InputText id="TempatLahir" value={nasabah.TempatLahir} onChange={(e) => onInputChange(e, 'TempatLahir')} />
-                        </div>
-                        <div className="field">
-                            <label htmlFor="StatusPerkawinan">Status Perkawinan</label>
-                            <Dropdown id="StatusPerkawinan" value={nasabah.StatusPerkawinan} options={statusPerkawinanOptions} onChange={(e) => onInputChange(e, 'StatusPerkawinan')} placeholder="Pilih Status Perkawinan" />
-                        </div>
-                        <div className="field">
-                            <label htmlFor="KTP">KTP</label>
-                            <InputText id="KTP" value={nasabah.KTP} onChange={(e) => onInputChange(e, 'KTP')} />
-                        </div>
-                        <div className="field">
-                            <label htmlFor="Agama">Agama</label>
-                            <InputText id="Agama" value={nasabah.Agama} onChange={(e) => onInputChange(e, 'Agama')} />
-                        </div>
-                        <div className="field">
-                            <label htmlFor="Alamat">Alamat</label>
-                            <InputText id="Alamat" value={nasabah.Alamat} onChange={(e) => onInputChange(e, 'Alamat')} />
-                        </div>
-                        <div className="field">
-                            <label htmlFor="Telepon">Telepon</label>
-                            <InputText id="Telepon" value={nasabah.Telepon} onChange={(e) => onInputChange(e, 'Telepon')} />
-                        </div>
-                        <div className="field">
-                            <label htmlFor="Email">Email</label>
-                            <InputText id="Email" value={nasabah.Email} onChange={(e) => onInputChange(e, 'Email')} />
                         </div>
                     </Dialog>
 
