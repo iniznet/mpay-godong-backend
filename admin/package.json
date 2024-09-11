@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
+    "start": "next start -p 6947",
     "format": "prettier --write \"{app,demo,layout,types}/**/*.{js,ts,tsx,d.ts}\"",
     "lint": "next lint"
   },
