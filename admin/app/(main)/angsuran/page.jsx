@@ -41,6 +41,9 @@ const AngsuranCrud = () => {
     const [totalRecords, setTotalRecords] = useState(0);
 
     useEffect(() => {
+        const now = new Date();
+        onDateChange({ value: now }, 'Tgl');
+        onDateChange({ value: now }, 'DateTime');
         loadLazyData();
     }, [lazyParams]);
 
@@ -337,14 +340,16 @@ const AngsuranCrud = () => {
                         <Column body={actionBodyTemplate} headerStyle={{ minWidth: '10rem' }}></Column>
                     </DataTable>
 
-                    <Dialog visible={angsuranDialog} style={{ width: '450px' }} header="Detail Angsuran" modal className="p-fluid" footer={angsuranDialogFooter} onHide={hideDialog}>
-                        <div className="field">
-                            <label htmlFor="CabangEntry">Cabang Entry</label>
-                            <InputText id="CabangEntry" value={angsuran.CabangEntry} onChange={(e) => onInputChange(e, 'CabangEntry')} maxLength={3} />
+                    <Dialog visible={angsuranDialog} style={{ width: '80%' }} header="Detail Angsuran" modal className="p-fluid" footer={angsuranDialogFooter} onHide={hideDialog}>
+                        <div className="grid">
+                            <div className="col-6">
+                                <div className="field">
+                                    <label htmlFor="CabangEntry">Cabang Entry</label>
+                                    <InputText id="CabangEntry" value={angsuran.CabangEntry} onChange={(e) => onInputChange(e, 'CabangEntry')} maxLength={3} />
                         </div>
-                        <div className="field">
-                            <label htmlFor="Status">Status</label>
-                            <InputText id="Status" value={angsuran.Status} onChange={(e) => onInputChange(e, 'Status')} maxLength={1} />
+                            <div className="field">
+                                <label htmlFor="Status">Status</label>
+                                <InputText id="Status" value={angsuran.Status} onChange={(e) => onInputChange(e, 'Status')} maxLength={1} />
                         </div>
                         <div className="field">
                             <label htmlFor="Faktur">Faktur</label>
@@ -353,16 +358,16 @@ const AngsuranCrud = () => {
                         </div>
                         <div className="field">
                             <label htmlFor="Tgl">Tanggal</label>
-                            <Calendar id="Tgl" value={angsuran.Tgl ? new Date(angsuran.Tgl) : null} onChange={(e) => onDateChange(e, 'Tgl')} showIcon dateFormat="dd/mm/yy" />
+                            <Calendar id="Tgl" value={angsuran.Tgl} onChange={(e) => onDateChange(e, 'Tgl')} showIcon dateFormat="dd/mm/yy" />
                         </div>
                         <div className="field">
                             <label htmlFor="Rekening">Rekening</label>
                             <div className="p-inputgroup">
-                                <InputText id="Rekening" value={angsuran.Rekening} onChange={(e) => onInputChange(e, 'Rekening')} maxLength={15} />
-                                <Button icon="pi pi-search" className="p-button-warning" onClick={openDebiturDialog} />
-                            </div>
+                            <InputText id="Rekening" value={angsuran.Rekening} onChange={(e) => onInputChange(e, 'Rekening')} maxLength={15} />
+                            <Button icon="pi pi-search" className="p-button-warning" onClick={openDebiturDialog} />
                         </div>
-                        <div className="field">
+                        </div>
+                            <div className="field">
                             <label htmlFor="Keterangan">Keterangan</label>
                             <InputText id="Keterangan" value={angsuran.Keterangan} onChange={(e) => onInputChange(e, 'Keterangan')} maxLength={255} />
                         </div>
@@ -374,43 +379,47 @@ const AngsuranCrud = () => {
                             <label htmlFor="KPokok">Kredit Pokok</label>
                             <InputNumber id="KPokok" value={angsuran.KPokok} onValueChange={(e) => onInputNumberChange(e, 'KPokok')} mode="currency" currency="IDR" locale="id-ID" />
                         </div>
-                        <div className="field">
+                        </div>
+                            <div className="col-6">
+                            <div className="field">
                             <label htmlFor="DBunga">Debet Bunga</label>
                             <InputNumber id="DBunga" value={angsuran.DBunga} onValueChange={(e) => onInputNumberChange(e, 'DBunga')} mode="currency" currency="IDR" locale="id-ID" />
                         </div>
-                        <div className="field">
-                            <label htmlFor="KBunga">Kredit Bunga</label>
-                            <InputNumber id="KBunga" value={angsuran.KBunga} onValueChange={(e) => onInputNumberChange(e, 'KBunga')} mode="currency" currency="IDR" locale="id-ID" />
+                <div className="field">
+                    <label htmlFor="KBunga">Kredit Bunga</label>
+                    <InputNumber id="KBunga" value={angsuran.KBunga} onValueChange={(e) => onInputNumberChange(e, 'KBunga')} mode="currency" currency="IDR" locale="id-ID" />
+                </div>
+                <div className="field">
+                    <label htmlFor="Denda">Denda</label>
+                    <InputNumber id="Denda" value={angsuran.Denda} onValueChange={(e) => onInputNumberChange(e, 'Denda')} mode="currency" currency="IDR" locale="id-ID" />
+                </div>
+                <div className="field">
+                    <label htmlFor="Administrasi">Administrasi</label>
+                    <InputNumber id="Administrasi" value={angsuran.Administrasi} onValueChange={(e) => onInputNumberChange(e, 'Administrasi')} mode="currency" currency="IDR" locale="id-ID" />
+                </div>
+                <div className="field">
+                    <label htmlFor="Kas">Kas</label>
+                    <Dropdown
+                        id="Kas"
+                        value={angsuran.Kas}
+                        options={[
+                            { label: 'Kredit', value: 'K' },
+                            { label: 'Debet', value: 'D' }
+                        ]}
+                        onChange={(e) => onInputChange(e, 'Kas')}
+                        placeholder="Pilih Kas"
+                    />
+                </div>
+                <div className="field">
+                    <label htmlFor="DateTime">Date Time</label>
+                    <Calendar id="DateTime" value={angsuran.DateTime} onChange={(e) => onDateChange(e, 'DateTime')} showIcon showTime hourFormat="24" />
+                </div>
+                <div className="field">
+                    <label htmlFor="UserName">User Name</label>
+                    <InputText id="UserName" value={angsuran.UserName} onChange={(e) => onInputChange(e, 'UserName')} maxLength={20} />
+                          </div>
                         </div>
-                        <div className="field">
-                            <label htmlFor="Denda">Denda</label>
-                            <InputNumber id="Denda" value={angsuran.Denda} onValueChange={(e) => onInputNumberChange(e, 'Denda')} mode="currency" currency="IDR" locale="id-ID" />
-                        </div>
-                        <div className="field">
-                            <label htmlFor="Administrasi">Administrasi</label>
-                            <InputNumber id="Administrasi" value={angsuran.Administrasi} onValueChange={(e) => onInputNumberChange(e, 'Administrasi')} mode="currency" currency="IDR" locale="id-ID" />
-                        </div>
-                        <div className="field">
-                            <label htmlFor="Kas">Kas</label>
-                            <Dropdown
-                                id="Kas"
-                                value={angsuran.Kas}
-                                options={[
-                                    { label: 'Kredit', value: 'K' },
-                                    { label: 'Debet', value: 'D' }
-                                ]}
-                                onChange={(e) => onInputChange(e, 'Kas')}
-                                placeholder="Pilih Kas"
-                            />
-                        </div>
-                        <div className="field">
-                            <label htmlFor="DateTime">Date Time</label>
-                            <Calendar id="DateTime" value={angsuran.DateTime ? new Date(angsuran.DateTime) : null} onChange={(e) => onDateChange(e, 'DateTime')} showIcon showTime hourFormat="24" />
-                        </div>
-                        <div className="field">
-                            <label htmlFor="UserName">User Name</label>
-                            <InputText id="UserName" value={angsuran.UserName} onChange={(e) => onInputChange(e, 'UserName')} maxLength={20} />
-                        </div>
+                     </div>
                     </Dialog>
 
                     <Dialog visible={deleteAngsuranDialog} style={{ width: '450px' }} header="Konfirmasi Hapus" modal footer={deleteAngsuranDialogFooter} onHide={hideDeleteAngsuranDialog}>

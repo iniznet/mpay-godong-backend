@@ -45,11 +45,12 @@ const MutasiTabunganCrud = () => {
     }, [lazyParams]);
 
     function initEmptyMutasiTabungan() {
+        const now = new Date();
         return {
             ID: null,
             CabangEntry: '',
             Faktur: '',
-            Tgl: null,
+            Tgl: now,
             Rekening: '',
             KodeTransaksi: '',
             DK: '',
@@ -58,7 +59,7 @@ const MutasiTabunganCrud = () => {
             Debet: 0,
             Kredit: 0,
             UserName: '',
-            DateTime: null,
+            DateTime: now,
             UserAcc: '',
             Denda: 0
         };
@@ -87,7 +88,7 @@ const MutasiTabunganCrud = () => {
         setMutasiTabungan(initEmptyMutasiTabungan());
 
         const response = await MutasiTabunganApi.getNextFaktur();
-        setMutasiTabungan({ ...mutasiTabungan, Faktur: response.data.faktur });
+        setMutasiTabungan(prev => ({ ...mutasiTabungan, Faktur: response.data.faktur }));
 
         setSubmitted(false);
         setMutasiTabunganDialog(true);
@@ -332,75 +333,73 @@ const MutasiTabunganCrud = () => {
                         <Column body={actionBodyTemplate} headerStyle={{ minWidth: '10rem' }}></Column>
                     </DataTable>
 
-                    <Dialog visible={mutasiTabunganDialog} style={{ width: '450px' }} header="Detail Mutasi Tabungan" modal className="p-fluid" footer={mutasiTabunganDialogFooter} onHide={hideDialog}>
-                        <div className="field">
-                            <label htmlFor="CabangEntry">Cabang Entry</label>
-                            <InputText id="CabangEntry" value={mutasiTabungan.CabangEntry} onChange={(e) => onInputChange(e, 'CabangEntry')} maxLength={3} />
-                        </div>
-                        <div className="field">
-                            <label htmlFor="Faktur">Faktur</label>
-                            <InputText id="Faktur" value={mutasiTabungan.Faktur} onChange={(e) => onInputChange(e, 'Faktur')} required autoFocus className={classNames({ 'p-invalid': submitted && !mutasiTabungan.Faktur })} maxLength={20} />
-                            {submitted && !mutasiTabungan.Faktur && <small className="p-invalid">Faktur is required.</small>}
-                        </div>
-                        <div className="field">
-                            <label htmlFor="Tgl">Tanggal</label>
-                            <Calendar id="Tgl" value={mutasiTabungan.Tgl ? new Date(mutasiTabungan.Tgl) : null} onChange={(e) => onDateChange(e, 'Tgl')} showIcon dateFormat="dd/mm/yy" />
-                        </div>
-                        <div className="field">
-                            <label htmlFor="Rekening">Rekening</label>
-                            <div className="p-inputgroup">
-                                <InputText id="Rekening" value={mutasiTabungan.Rekening} onChange={(e) => onInputChange(e, 'Rekening')} maxLength={15} />
-                                <Button icon="pi pi-search" className="p-button-warning" onClick={openRekeningDialog} />
+                    <Dialog visible={mutasiTabunganDialog} style={{ width: '80%' }} header="Detail Mutasi Tabungan" modal className="p-fluid" footer={mutasiTabunganDialogFooter} onHide={hideDialog}>
+                        <div className="grid">
+                            <div className="col-6">
+                                <div className="field">
+                                    <label htmlFor="CabangEntry">Cabang Entry</label>
+                                    <InputText id="CabangEntry" value={mutasiTabungan.CabangEntry} onChange={(e) => onInputChange(e, 'CabangEntry')} maxLength={3} />
+                                </div>
+                                <div className="field">
+                                    <label htmlFor="Faktur">Faktur</label>
+                                    <InputText id="Faktur" value={mutasiTabungan.Faktur} onChange={(e) => onInputChange(e, 'Faktur')} required autoFocus className={classNames({ 'p-invalid': submitted && !mutasiTabungan.Faktur })} maxLength={20} />
+                                    {submitted && !mutasiTabungan.Faktur && <small className="p-invalid">Faktur is required.</small>}
+                                </div>
+                                <div className="field">
+                                    <label htmlFor="Tgl">Tanggal</label>
+                                    <Calendar id="Tgl" value={mutasiTabungan.Tgl} onChange={(e) => onDateChange(e, 'Tgl')} showIcon dateFormat="dd/mm/yy" />
+                                </div>
+                                <div className="field">
+                                    <label htmlFor="Rekening">Rekening</label>
+                                    <div className="p-inputgroup">
+                                        <InputText id="Rekening" value={mutasiTabungan.Rekening} onChange={(e) => onInputChange(e, 'Rekening')} maxLength={15} />
+                                        <Button icon="pi pi-search" className="p-button-warning" onClick={openRekeningDialog} />
+                                    </div>
+                                </div>
+                                <div className="field">
+                                    <label htmlFor="KodeTransaksi">Kode Transaksi</label>
+                                    <InputText id="KodeTransaksi" value={mutasiTabungan.KodeTransaksi} onChange={(e) => onInputChange(e, 'KodeTransaksi')} maxLength={3} />
+                                </div>
+                                <div className="field">
+                                    <label htmlFor="DK">Setoran/Penarikan</label>
+                                    <Dropdown
+                                        id="DK"
+                                        value={mutasiTabungan.DK}
+                                        options={[
+                                            { label: 'Penarikan', value: 'D' },
+                                            { label: 'Setoran', value: 'K' }
+                                        ]}
+                                        onChange={(e) => onInputChange(e, 'DK')}
+                                        placeholder="Pilih Setoran/Penarikan"
+                                    />
+                                </div>
                             </div>
-                        </div>
-                        <div className="field">
-                            <label htmlFor="KodeTransaksi">Kode Transaksi</label>
-                            <InputText id="KodeTransaksi" value={mutasiTabungan.KodeTransaksi} onChange={(e) => onInputChange(e, 'KodeTransaksi')} maxLength={3} />
-                        </div>
-                        <div className="field">
-                            <label htmlFor="DK">Debit/Kredit</label>
-                            <Dropdown
-                                id="DK"
-                                value={mutasiTabungan.DK}
-                                options={[
-                                    { label: 'Debet', value: 'D' },
-                                    { label: 'Kredit', value: 'K' }
-                                ]}
-                                onChange={(e) => onInputChange(e, 'DK')}
-                                placeholder="Pilih D/K"
-                            />
-                        </div>
-                        <div className="field">
-                            <label htmlFor="Keterangan">Keterangan</label>
-                            <InputText id="Keterangan" value={mutasiTabungan.Keterangan} onChange={(e) => onInputChange(e, 'Keterangan')} maxLength={255} />
-                        </div>
-                        <div className="field">
-                            <label htmlFor="Jumlah">Jumlah</label>
-                            <InputNumber id="Jumlah" value={mutasiTabungan.Jumlah} onValueChange={(e) => onInputNumberChange(e, 'Jumlah')} mode="currency" currency="IDR" locale="id-ID" minFractionDigits={2} maxFractionDigits={2} />
-                        </div>
-                        <div className="field">
-                            <label htmlFor="Debet">Debet</label>
-                            <InputNumber id="Debet" value={mutasiTabungan.Debet} onValueChange={(e) => onInputNumberChange(e, 'Debet')} mode="currency" currency="IDR" locale="id-ID" minFractionDigits={2} maxFractionDigits={2} />
-                        </div>
-                        <div className="field">
-                            <label htmlFor="Kredit">Kredit</label>
-                            <InputNumber id="Kredit" value={mutasiTabungan.Kredit} onValueChange={(e) => onInputNumberChange(e, 'Kredit')} mode="currency" currency="IDR" locale="id-ID" minFractionDigits={2} maxFractionDigits={2} />
-                        </div>
-                        <div className="field">
-                            <label htmlFor="UserName">User Name</label>
-                            <InputText id="UserName" value={mutasiTabungan.UserName} onChange={(e) => onInputChange(e, 'UserName')} maxLength={20} />
-                        </div>
-                        <div className="field">
-                            <label htmlFor="DateTime">Date Time</label>
-                            <Calendar id="DateTime" value={mutasiTabungan.DateTime ? new Date(mutasiTabungan.DateTime) : null} onChange={(e) => onDateChange(e, 'DateTime')} showIcon showTime hourFormat="24" />
-                        </div>
-                        <div className="field">
-                            <label htmlFor="UserAcc">User Acc</label>
-                            <InputText id="UserAcc" value={mutasiTabungan.UserAcc} onChange={(e) => onInputChange(e, 'UserAcc')} maxLength={20} />
-                        </div>
-                        <div className="field">
-                            <label htmlFor="Denda">Denda</label>
-                            <InputNumber id="Denda" value={mutasiTabungan.Denda} onValueChange={(e) => onInputNumberChange(e, 'Denda')} mode="currency" currency="IDR" locale="id-ID" minFractionDigits={2} maxFractionDigits={2} />
+                            <div className="col-6">
+                            <div className="field">
+                                    <label htmlFor="Keterangan">Keterangan</label>
+                                    <InputText id="Keterangan" value={mutasiTabungan.Keterangan} onChange={(e) => onInputChange(e, 'Keterangan')} maxLength={255} />
+                                </div>
+                                <div className="field">
+                                    <label htmlFor="Jumlah">Jumlah</label>
+                                    <InputNumber id="Jumlah" value={mutasiTabungan.Jumlah} onValueChange={(e) => onInputNumberChange(e, 'Jumlah')} mode="currency" currency="IDR" locale="id-ID" minFractionDigits={2} maxFractionDigits={2} />
+                                </div>
+                                <div className="field">
+                                    <label htmlFor="UserName">User Name</label>
+                                    <InputText id="UserName" value={mutasiTabungan.UserName} onChange={(e) => onInputChange(e, 'UserName')} maxLength={20} />
+                                </div>
+                                <div className="field">
+                                    <label htmlFor="DateTime">Date Time</label>
+                                    <Calendar id="DateTime" value={mutasiTabungan.DateTime} onChange={(e) => onDateChange(e, 'DateTime')} showIcon showTime hourFormat="24" />
+                                </div>
+                                <div className="field">
+                                    <label htmlFor="UserAcc">User Acc</label>
+                                    <InputText id="UserAcc" value={mutasiTabungan.UserAcc} onChange={(e) => onInputChange(e, 'UserAcc')} maxLength={20} />
+                                </div>
+                                <div className="field">
+                                    <label htmlFor="Denda">Denda</label>
+                                    <InputNumber id="Denda" value={mutasiTabungan.Denda} onValueChange={(e) => onInputNumberChange(e, 'Denda')} mode="currency" currency="IDR" locale="id-ID" minFractionDigits={2} maxFractionDigits={2} />
+                                </div>
+                            </div>
                         </div>
                     </Dialog>
 

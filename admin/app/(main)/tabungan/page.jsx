@@ -322,67 +322,73 @@ const TabunganCrud = () => {
                         <Column body={actionBodyTemplate} headerStyle={{ minWidth: '10rem' }}></Column>
                     </DataTable>
 
-                    <Dialog visible={tabunganDialog} style={{ width: '450px' }} header="Detail Tabungan" modal className="p-fluid" footer={tabunganDialogFooter} onHide={hideDialog}>
-                        <div className="field">
-                            <label htmlFor="Rekening">Rekening</label>
-                            <InputText id="Rekening" value={tabungan.Rekening} onChange={(e) => onInputChange(e, 'Rekening')} required autoFocus className={classNames({ 'p-invalid': submitted && !tabungan.Rekening })} />
-                            {submitted && !tabungan.Rekening && <small className="p-invalid">Rekening is required.</small>}
-                        </div>
-                        <div className="field">
-                            <label htmlFor="Kode">Kode Nasabah</label>
-                            <div className="p-inputgroup">
-                                <InputText id="Kode" value={tabungan.Kode} readOnly />
-                                <Button icon="pi pi-search" className="p-button-warning" onClick={openNasabahDialog} />
+                    <Dialog visible={tabunganDialog} style={{ width: '80%' }} header="Detail Tabungan" modal className="p-fluid" footer={tabunganDialogFooter} onHide={hideDialog}>
+                    <div className="grid">
+                            <div className="col-12 md:col-6">
+                                <div className="field">
+                                    <label htmlFor="Rekening">Rekening</label>
+                                    <InputText id="Rekening" value={tabungan.Rekening} onChange={(e) => onInputChange(e, 'Rekening')} required autoFocus className={classNames({ 'p-invalid': submitted && !tabungan.Rekening })} />
+                                    {submitted && !tabungan.Rekening && <small className="p-invalid">Rekening is required.</small>}
+                                </div>
+                                <div className="field">
+                                    <label htmlFor="Kode">Kode Nasabah</label>
+                                    <div className="p-inputgroup">
+                                        <InputText id="Kode" value={tabungan.Kode} readOnly />
+                                        <Button icon="pi pi-search" className="p-button-warning" onClick={openNasabahDialog} />
+                                    </div>
+                                </div>
+                                <div className="field">
+                                    <label htmlFor="NamaNasabah">Nama Nasabah</label>
+                                    <InputText id="NamaNasabah" value={tabungan.NamaNasabah} readOnly />
+                                </div>
+                                <div className="field">
+                                    <label htmlFor="GolonganTabungan">Golongan Tabungan</label>
+                                    <InputText id="GolonganTabungan" value={tabungan.GolonganTabungan} onChange={(e) => onInputChange(e, 'GolonganTabungan')} />
+                                </div>
+                                <div className="field">
+                                    <label htmlFor="StatusBlokir">Status Blokir</label>
+                                    <Dropdown
+                                        id="StatusBlokir"
+                                        value={tabungan.StatusBlokir}
+                                        options={[
+                                            { label: 'Aktif', value: '0' },
+                                            { label: 'Diblokir', value: '1' }
+                                        ]}
+                                        onChange={(e) => onInputChange(e, 'StatusBlokir')}
+                                        placeholder="Pilih Status Blokir"
+                                    />
+                                </div>
+                                <div className="field">
+                                    <label htmlFor="JumlahBlokir">Jumlah Blokir</label>
+                                    <InputNumber id="JumlahBlokir" value={tabungan.JumlahBlokir} onValueChange={(e) => onInputNumberChange(e, 'JumlahBlokir')} mode="currency" currency="IDR" locale="id-ID" />
+                                </div>
                             </div>
-                        </div>
-                        <div className="field">
-                            <label htmlFor="NamaNasabah">Nama Nasabah</label>
-                            <InputText id="NamaNasabah" value={tabungan.NamaNasabah} readOnly />
-                        </div>
-                        <div className="field">
-                            <label htmlFor="GolonganTabungan">Golongan Tabungan</label>
-                            <InputText id="GolonganTabungan" value={tabungan.GolonganTabungan} onChange={(e) => onInputChange(e, 'GolonganTabungan')} />
-                        </div>
-                        <div className="field">
-                            <label htmlFor="StatusBlokir">Status Blokir</label>
-                            <Dropdown
-                                id="StatusBlokir"
-                                value={tabungan.StatusBlokir}
-                                options={[
-                                    { label: 'Aktif', value: '0' },
-                                    { label: 'Diblokir', value: '1' }
-                                ]}
-                                onChange={(e) => onInputChange(e, 'StatusBlokir')}
-                                placeholder="Pilih Status Blokir"
-                            />
-                        </div>
-                        <div className="field">
-                            <label htmlFor="JumlahBlokir">Jumlah Blokir</label>
-                            <InputNumber id="JumlahBlokir" value={tabungan.JumlahBlokir} onValueChange={(e) => onInputNumberChange(e, 'JumlahBlokir')} mode="currency" currency="IDR" locale="id-ID" />
-                        </div>
-                        <div className="field">
-                            <label htmlFor="SaldoAkhir">Saldo Akhir</label>
-                            <InputNumber id="SaldoAkhir" value={tabungan.SaldoAkhir} onValueChange={(e) => onInputNumberChange(e, 'SaldoAkhir')} mode="currency" currency="IDR" locale="id-ID" />
-                        </div>
-                        <div className="field">
-                            <label htmlFor="Tgl">Tanggal</label>
-                            <Calendar id="Tgl" value={tabungan.Tgl} onChange={(e) => onDateChange(e, 'Tgl')} showIcon />
-                        </div>
-                        <div className="field">
-                            <label htmlFor="TglPenutupan">Tanggal Penutupan</label>
-                            <Calendar id="TglPenutupan" value={tabungan.TglPenutupan} onChange={(e) => onDateChange(e, 'TglPenutupan')} showIcon />
-                        </div>
-                        <div className="field">
-                            <label htmlFor="KeteranganBlokir">Keterangan Blokir</label>
-                            <InputText id="KeteranganBlokir" value={tabungan.KeteranganBlokir} onChange={(e) => onInputChange(e, 'KeteranganBlokir')} />
-                        </div>
-                        <div className="field">
-                            <label htmlFor="Pekerjaan">Pekerjaan</label>
-                            <InputText id="Pekerjaan" value={tabungan.Pekerjaan} onChange={(e) => onInputChange(e, 'Pekerjaan')} required />
-                        </div>
-                        <div className="field">
-                            <label htmlFor="UserName">User Name</label>
-                            <InputText id="UserName" value={tabungan.UserName} onChange={(e) => onInputChange(e, 'UserName')} />
+                            <div className="col-12 md:col-6">
+                                <div className="field">
+                                    <label htmlFor="SaldoAkhir">Saldo Akhir</label>
+                                    <InputNumber id="SaldoAkhir" value={tabungan.SaldoAkhir} onValueChange={(e) => onInputNumberChange(e, 'SaldoAkhir')} mode="currency" currency="IDR" locale="id-ID" />
+                                </div>
+                                <div className="field">
+                                    <label htmlFor="Tgl">Tanggal</label>
+                                    <Calendar id="Tgl" value={tabungan.Tgl} onChange={(e) => onDateChange(e, 'Tgl')} showIcon />
+                                </div>
+                                <div className="field">
+                                    <label htmlFor="TglPenutupan">Tanggal Penutupan</label>
+                                    <Calendar id="TglPenutupan" value={tabungan.TglPenutupan} onChange={(e) => onDateChange(e, 'TglPenutupan')} showIcon />
+                                </div>
+                                <div className="field">
+                                    <label htmlFor="KeteranganBlokir">Keterangan Blokir</label>
+                                    <InputText id="KeteranganBlokir" value={tabungan.KeteranganBlokir} onChange={(e) => onInputChange(e, 'KeteranganBlokir')} />
+                                </div>
+                                <div className="field">
+                                    <label htmlFor="Pekerjaan">Pekerjaan</label>
+                                    <InputText id="Pekerjaan" value={tabungan.Pekerjaan} onChange={(e) => onInputChange(e, 'Pekerjaan')} required />
+                                </div>
+                                <div className="field">
+                                    <label htmlFor="UserName">User Name</label>
+                                    <InputText id="UserName" value={tabungan.UserName} onChange={(e) => onInputChange(e, 'UserName')} />
+                                </div>
+                            </div>
                         </div>
                     </Dialog>
 

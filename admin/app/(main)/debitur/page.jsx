@@ -44,7 +44,6 @@ const DebiturCrud = () => {
     const [nasabahs, setNasabahs] = useState([]);
     const [nasabahFilter, setNasabahFilter] = useState('');
 
-
     useEffect(() => {
         loadLazyData();
     }, [lazyParams]);
@@ -227,11 +226,6 @@ const DebiturCrud = () => {
         setRekeningFilter('');
     };
 
-    const onRekeningSelect = (rekening) => {
-        setDebitur({ ...debitur, RekeningTabungan: rekening.Rekening });
-        hideRekeningDialog();
-    };
-
     const openNasabahDialog = async () => {
         try {
             const response = await NasabahApi.getNasabahs();
@@ -251,6 +245,11 @@ const DebiturCrud = () => {
     const onNasabahSelect = (nasabah) => {
         setDebitur({ ...debitur, Kode: nasabah.Kode });
         hideNasabahDialog();
+    };
+
+    const onRekeningSelect = (rekening) => {
+        setDebitur({ ...debitur, RekeningTabungan: rekening.Rekening });
+        hideRekeningDialog();
     };
 
     const actionBodyTemplate = (rowData) => {
@@ -371,102 +370,109 @@ const DebiturCrud = () => {
                         <Column body={actionBodyTemplate} headerStyle={{ minWidth: '10rem' }}></Column>
                     </DataTable>
 
-                    <Dialog visible={debiturDialog} style={{ width: '450px' }} header="Detail Debitur" modal className="p-fluid" footer={debiturDialogFooter} onHide={hideDialog}>
-                        <div className="field">
-                            <label htmlFor="Kode">Nasabah</label>
-                            <div className="p-inputgroup">
-                                <InputText id="Kode" value={debitur.Kode} onChange={(e) => onInputChange(e, 'Kode')} maxLength={15} />
-                                <Button icon="pi pi-search" className="p-button-warning" onClick={openNasabahDialog} />
+                    <Dialog visible={debiturDialog} style={{ width: '80%' }} header="Detail Debitur" modal className="p-fluid" footer={debiturDialogFooter} onHide={hideDialog}>
+                         <div className="grid">
+                            <div className="col-6">
+                                <div className="field">
+                                    <label htmlFor="Kode">Nasabah</label>
+                                    <div className="p-inputgroup">
+                                        <InputText id="Kode" value={debitur.Kode} onChange={(e) => onInputChange(e, 'Kode')} maxLength={15} />
+                                        <Button icon="pi pi-search" className="p-button-warning" onClick={openNasabahDialog} />
+                                    </div>
+                                </div>
+                                <div className="field">
+                                    <label htmlFor="Rekening">Rekening</label>
+                                    <InputText id="Rekening" value={debitur.Rekening} onChange={(e) => onInputChange(e, 'Rekening')} required autoFocus className={classNames({ 'p-invalid': submitted && !debitur.Rekening })} />
+                                    {submitted && !debitur.Rekening && <small className="p-invalid">Rekening is required.</small>}
+                                </div>
+                                <div className="field">
+                                    <label htmlFor="Faktur">Faktur</label>
+                                    <InputText id="Faktur" value={debitur.Faktur} onChange={(e) => onInputChange(e, 'Faktur')} />
+                                </div>
+                                <div className="field">
+                                    <label htmlFor="RekeningJaminan">Rekening Jaminan</label>
+                                    <InputText id="RekeningJaminan" value={debitur.RekeningJaminan} onChange={(e) => onInputChange(e, 'RekeningJaminan')} required />
+                                </div>
+                                <div className="field">
+                                    <label htmlFor="Jaminan">Jaminan</label>
+                                    <InputText id="Jaminan" value={debitur.Jaminan} onChange={(e) => onInputChange(e, 'Jaminan')} required />
+                                </div>
+                                <div className="field">
+                                    <label htmlFor="StatusPencairan">Status Pencairan</label>
+                                    <Dropdown
+                                        id="StatusPencairan"
+                                        value={debitur.StatusPencairan}
+                                        options={[
+                                            { label: 'Belum Cair', value: '0' },
+                                            { label: 'Sudah Cair', value: '1' }
+                                        ]}
+                                        onChange={(e) => onInputChange(e, 'StatusPencairan')}
+                                        placeholder="Pilih Status Pencairan"
+                                    />
+                                </div>
+                                <div className="field">
+                                    <label htmlFor="NoPengajuan">No Pengajuan</label>
+                                    <InputText id="NoPengajuan" value={debitur.NoPengajuan} onChange={(e) => onInputChange(e, 'NoPengajuan')} />
+                                </div>
+                                <div className="field">
+                                    <label htmlFor="KeteranganJaminan">Keterangan Jaminan</label>
+                                    <InputText id="KeteranganJaminan" value={debitur.KeteranganJaminan} onChange={(e) => onInputChange(e, 'KeteranganJaminan')} />
+                                </div>
+                                <div className="field">
+                                    <label htmlFor="Wilayah">Wilayah</label>
+                                    <InputText id="Wilayah" value={debitur.Wilayah} onChange={(e) => onInputChange(e, 'Wilayah')} />
+                                </div>
+                                <div className="field">
+                                    <label htmlFor="SukuBunga">Suku Bunga</label>
+                                    <InputNumber id="SukuBunga" value={debitur.SukuBunga} onValueChange={(e) => onInputNumberChange(e, 'SukuBunga')} mode="decimal" minFractionDigits={5} maxFractionDigits={5} />
+                                </div>
                             </div>
-                        </div>
-                        <div className="field">
-                            <label htmlFor="Rekening">Rekening</label>
-                            <InputText id="Rekening" value={debitur.Rekening} onChange={(e) => onInputChange(e, 'Rekening')} required autoFocus className={classNames({ 'p-invalid': submitted && !debitur.Rekening })} />
-                            {submitted && !debitur.Rekening && <small className="p-invalid">Rekening is required.</small>}
-                        </div>
-                        <div className="field">
-                            <label htmlFor="Faktur">Faktur</label>
-                            <InputText id="Faktur" value={debitur.Faktur} onChange={(e) => onInputChange(e, 'Faktur')} />
-                        </div>
-                        <div className="field">
-                            <label htmlFor="RekeningJaminan">Rekening Jaminan</label>
-                            <InputText id="RekeningJaminan" value={debitur.RekeningJaminan} onChange={(e) => onInputChange(e, 'RekeningJaminan')} required />
-                        </div>
-                        <div className="field">
-                            <label htmlFor="Jaminan">Jaminan</label>
-                            <InputText id="Jaminan" value={debitur.Jaminan} onChange={(e) => onInputChange(e, 'Jaminan')} required />
-                        </div>
-                        <div className="field">
-                            <label htmlFor="StatusPencairan">Status Pencairan</label>
-                            <Dropdown
-                                id="StatusPencairan"
-                                value={debitur.StatusPencairan}
-                                options={[
-                                    { label: 'Belum Cair', value: '0' },
-                                    { label: 'Sudah Cair', value: '1' }
-                                ]}
-                                onChange={(e) => onInputChange(e, 'StatusPencairan')}
-                                placeholder="Pilih Status Pencairan"
-                            />
-                        </div>
-                        <div className="field">
-                            <label htmlFor="NoPengajuan">No Pengajuan</label>
-                            <InputText id="NoPengajuan" value={debitur.NoPengajuan} onChange={(e) => onInputChange(e, 'NoPengajuan')} />
-                        </div>
-                        <div className="field">
-                            <label htmlFor="KeteranganJaminan">Keterangan Jaminan</label>
-                            <InputText id="KeteranganJaminan" value={debitur.KeteranganJaminan} onChange={(e) => onInputChange(e, 'KeteranganJaminan')} />
-                        </div>
-                        <div className="field">
-                            <label htmlFor="Wilayah">Wilayah</label>
-                            <InputText id="Wilayah" value={debitur.Wilayah} onChange={(e) => onInputChange(e, 'Wilayah')} />
-                        </div>
-                        <div className="field">
-                            <label htmlFor="SukuBunga">Suku Bunga</label>
-                            <InputNumber id="SukuBunga" value={debitur.SukuBunga} onValueChange={(e) => onInputNumberChange(e, 'SukuBunga')} mode="decimal" minFractionDigits={5} maxFractionDigits={5} />
-                        </div>
-                        <div className="field">
-                            <label htmlFor="Plafond">Plafond</label>
-                            <InputNumber id="Plafond" value={debitur.Plafond} onValueChange={(e) => onInputNumberChange(e, 'Plafond')} mode="currency" currency="IDR" locale="id-ID" />
-                        </div>
-                        <div className="field">
-                            <label htmlFor="PencairanPokok">Pencairan Pokok</label>
-                            <InputNumber id="PencairanPokok" value={debitur.PencairanPokok} onValueChange={(e) => onInputNumberChange(e, 'PencairanPokok')} mode="currency" currency="IDR" locale="id-ID" />
-                        </div>
-                        <div className="field">
-                            <label htmlFor="TotalBunga">Total Bunga</label>
-                            <InputNumber id="TotalBunga" value={debitur.TotalBunga} onValueChange={(e) => onInputNumberChange(e, 'TotalBunga')} mode="currency" currency="IDR" locale="id-ID" />
-                        </div>
-                        <div className="field">
-                            <label htmlFor="SaldoPokok">Saldo Pokok</label>
-                            <InputNumber id="SaldoPokok" value={debitur.SaldoPokok} onValueChange={(e) => onInputNumberChange(e, 'SaldoPokok')} mode="currency" currency="IDR" locale="id-ID" />
-                        </div>
-                        <div className="field">
-                            <label htmlFor="SaldoBunga">Saldo Bunga</label>
-                            <InputNumber id="SaldoBunga" value={debitur.SaldoBunga} onValueChange={(e) => onInputNumberChange(e, 'SaldoBunga')} mode="currency" currency="IDR" locale="id-ID" />
-                        </div>
-                        <div className="field">
-                            <label htmlFor="SaldoTitipan">Saldo Titipan</label>
-                            <InputNumber id="SaldoTitipan" value={debitur.SaldoTitipan} onValueChange={(e) => onInputNumberChange(e, 'SaldoTitipan')} mode="currency" currency="IDR" locale="id-ID" />
-                        </div>
-                        <div className="field">
-                            <label htmlFor="RekeningTabungan">Rekening Tabungan</label>
-                            <div className="p-inputgroup">
-                                <InputText id="RekeningTabungan" value={debitur.RekeningTabungan} onChange={(e) => onInputChange(e, 'RekeningTabungan')} maxLength={15} />
-                                <Button icon="pi pi-search" className="p-button-warning" onClick={openRekeningDialog} />
+
+                            <div className="col-6">
+                                <div className="field">
+                                    <label htmlFor="Plafond">Plafond</label>
+                                    <InputNumber id="Plafond" value={debitur.Plafond} onValueChange={(e) => onInputNumberChange(e, 'Plafond')} mode="currency" currency="IDR" locale="id-ID" />
+                                </div>
+                                <div className="field">
+                                    <label htmlFor="PencairanPokok">Pencairan Pokok</label>
+                                    <InputNumber id="PencairanPokok" value={debitur.PencairanPokok} onValueChange={(e) => onInputNumberChange(e, 'PencairanPokok')} mode="currency" currency="IDR" locale="id-ID" />
+                                </div>
+                                <div className="field">
+                                    <label htmlFor="TotalBunga">Total Bunga</label>
+                                    <InputNumber id="TotalBunga" value={debitur.TotalBunga} onValueChange={(e) => onInputNumberChange(e, 'TotalBunga')} mode="currency" currency="IDR" locale="id-ID" />
+                                </div>
+                                <div className="field">
+                                    <label htmlFor="SaldoPokok">Saldo Pokok</label>
+                                    <InputNumber id="SaldoPokok" value={debitur.SaldoPokok} onValueChange={(e) => onInputNumberChange(e, 'SaldoPokok')} mode="currency" currency="IDR" locale="id-ID" />
+                                </div>
+                                <div className="field">
+                                    <label htmlFor="SaldoBunga">Saldo Bunga</label>
+                                    <InputNumber id="SaldoBunga" value={debitur.SaldoBunga} onValueChange={(e) => onInputNumberChange(e, 'SaldoBunga')} mode="currency" currency="IDR" locale="id-ID" />
+                                </div>
+                                <div className="field">
+                                    <label htmlFor="SaldoTitipan">Saldo Titipan</label>
+                                    <InputNumber id="SaldoTitipan" value={debitur.SaldoTitipan} onValueChange={(e) => onInputNumberChange(e, 'SaldoTitipan')} mode="currency" currency="IDR" locale="id-ID" />
+                                </div>
+                                <div className="field">
+                                    <label htmlFor="RekeningTabungan">Rekening Tabungan</label>
+                                    <div className="p-inputgroup">
+                                        <InputText id="RekeningTabungan" value={debitur.RekeningTabungan} onChange={(e) => onInputChange(e, 'RekeningTabungan')} maxLength={15} />
+                                        <Button icon="pi pi-search" className="p-button-warning" onClick={openRekeningDialog} />
+                                    </div>
+                                </div>
+                                <div className="field">
+                                    <label htmlFor="Tgl">Tanggal</label>
+                                    <Calendar id="Tgl" value={debitur.Tgl} onChange={(e) => onDateChange(e, 'Tgl')} showIcon />
+                                </div>
+                                <div className="field">
+                                    <label htmlFor="DateTime">Date Time</label>
+                                    <Calendar id="DateTime" value={debitur.DateTime} onChange={(e) => onDateChange(e, 'DateTime')} showIcon showTime />
+                                </div>
+                                <div className="field">
+                                    <label htmlFor="UserName">User Name</label>
+                                    <InputText id="UserName" value={debitur.UserName} onChange={(e) => onInputChange(e, 'UserName')} />
+                                </div>
                             </div>
-                        </div>
-                        <div className="field">
-                            <label htmlFor="Tgl">Tanggal</label>
-                            <Calendar id="Tgl" value={debitur.Tgl} onChange={(e) => onDateChange(e, 'Tgl')} showIcon />
-                        </div>
-                        <div className="field">
-                            <label htmlFor="DateTime">Date Time</label>
-                            <Calendar id="DateTime" value={debitur.DateTime} onChange={(e) => onDateChange(e, 'DateTime')} showIcon showTime />
-                        </div>
-                        <div className="field">
-                            <label htmlFor="UserName">User Name</label>
-                            <InputText id="UserName" value={debitur.UserName} onChange={(e) => onInputChange(e, 'UserName')} />
                         </div>
                     </Dialog>
 
