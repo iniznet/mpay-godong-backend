@@ -10,7 +10,7 @@ class MutasiTabunganObserver
     {
         $tipe = $mutasiTabungan->DK;
         $jumlah = $mutasiTabungan->Jumlah;
-        $tabungan = $mutasiTabungan->Rekening;
+        $tabungan = $mutasiTabungan->tabungan;
 
         if ($tipe == 'D') {
             $mutasiTabungan->Debet = $jumlah;
@@ -29,7 +29,7 @@ class MutasiTabunganObserver
     {
         $tipe = $mutasiTabungan->DK;
         $jumlah = $mutasiTabungan->Jumlah;
-        $tabungan = $mutasiTabungan->Rekening;
+        $tabungan = $mutasiTabungan->tabungan;
 
         if ($tipe == 'D') {
             $mutasiTabungan->Debet = $jumlah;

@@ -15,6 +15,12 @@ class Tabungan extends Model
 
     protected $with = ['nasabah', 'mutasiTabungan'];
 
+    protected $casts = [
+        'Tgl' => 'date',
+        'TglPenutupan' => 'date',
+        'SaldoAkhir' => 'decimal:2',
+    ];
+
     public function nasabah()
     {
         return $this->belongsTo(Nasabah::class, 'Kode', 'Kode');

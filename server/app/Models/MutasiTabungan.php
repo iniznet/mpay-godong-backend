@@ -16,6 +16,11 @@ class MutasiTabungan extends Model
     protected $primaryKey = 'ID';
     protected $fillable = ['CabangEntry', 'Faktur', 'Tgl', 'Rekening', 'KodeTransaksi', 'DK', 'Keterangan', 'Jumlah', 'Debet', 'Kredit', 'UserName', 'DateTime', 'UserAcc', 'Denda'];
 
+    protected $casts = [
+        'Tgl' => 'date',
+        'DateTime' => 'datetime',
+    ];
+
     public function tabungan()
     {
         return $this->belongsTo(Tabungan::class, 'Rekening', 'Rekening');
