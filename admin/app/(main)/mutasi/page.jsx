@@ -14,8 +14,10 @@ import { classNames } from 'primereact/utils';
 import { Toolbar } from 'primereact/toolbar';
 import MutasiTabunganApi from '@/services/MutasiTabunganApi';
 import TabunganApi from '@/services/TabunganApi';
+import { useUser } from '@/context/userContext';
 
 const MutasiTabunganCrud = () => {
+    const { user } = useUser();
     const [mutasiTabungans, setMutasiTabungans] = useState(null);
     const [mutasiTabunganDialog, setMutasiTabunganDialog] = useState(false);
     const [deleteMutasiTabunganDialog, setDeleteMutasiTabunganDialog] = useState(false);
@@ -39,6 +41,7 @@ const MutasiTabunganCrud = () => {
         filters: null
     });
     const [totalRecords, setTotalRecords] = useState(0);
+    const [viewDialog, setViewDialog] = useState(false);
 
     useEffect(() => {
         loadLazyData();
@@ -75,7 +78,12 @@ const MutasiTabunganCrud = () => {
                 sort_order: lazyParams.sortOrder,
                 search: globalFilter
             });
-            setMutasiTabungans(response.data.data);
+            const formattedData = response.data.data.map(item => ({
+                ...item,
+                Tgl: new Date(item.Tgl),
+                DateTime: new Date(item.DateTime)
+            }));
+            setMutasiTabungans(formattedData);
             setTotalRecords(response.data.total);
         } catch (error) {
             console.error('Error loading mutasi tabungans:', error);
@@ -115,11 +123,11 @@ const MutasiTabunganCrud = () => {
                 let mutasiTabunganToSave = { ...mutasiTabungan };
 
                 if (mutasiTabunganToSave.Tgl) {
-                    mutasiTabunganToSave.Tgl = new Date(mutasiTabunganToSave.Tgl).toISOString().split('T')[0];
+                    mutasiTabunganToSave.Tgl = mutasiTabunganToSave.Tgl.toISOString().split('T')[0];
                 }
 
                 if (mutasiTabunganToSave.DateTime) {
-                    mutasiTabunganToSave.DateTime = new Date(mutasiTabunganToSave.DateTime).toISOString().slice(0, 19).replace('T', ' ');
+                    mutasiTabunganToSave.DateTime = mutasiTabunganToSave.DateTime.toISOString().slice(0, 19).replace('T', ' ');
                 }
 
                 let response;
@@ -142,13 +150,26 @@ const MutasiTabunganCrud = () => {
     };
 
     const editMutasiTabungan = (mutasiTabungan) => {
-        setMutasiTabungan({ ...mutasiTabungan });
+        setMutasiTabungan({
+            ...mutasiTabungan,
+            Tgl: new Date(mutasiTabungan.Tgl),
+            DateTime: new Date(mutasiTabungan.DateTime)
+        });
         setMutasiTabunganDialog(true);
     };
 
     const confirmDeleteMutasiTabungan = (mutasiTabungan) => {
         setMutasiTabungan(mutasiTabungan);
         setDeleteMutasiTabunganDialog(true);
+    };
+
+    const viewMutasiTabungan = (mutasiTabungan) => {
+        setMutasiTabungan({ ...mutasiTabungan });
+        setViewDialog(true);
+    };
+
+    const hideViewDialog = () => {
+        setViewDialog(false);
     };
 
     const deleteMutasiTabungan = async () => {
@@ -223,6 +244,12 @@ const MutasiTabunganCrud = () => {
     };
 
     const actionBodyTemplate = (rowData) => {
+        if (!user || user.role === 'collector') {
+            return (
+                <Button icon="pi pi-eye" rounded outlined className="mr-2" onClick={() => viewMutasiTabungan(rowData)} />
+            );
+        }
+
         return (
             <React.Fragment>
                 <Button icon="pi pi-pencil" rounded outlined className="mr-2" onClick={() => editMutasiTabungan(rowData)} />
@@ -236,6 +263,10 @@ const MutasiTabunganCrud = () => {
     };
 
     const leftToolbarTemplate = () => {
+        if (!user || user.role === 'collector') {
+            return null;
+        }
+
         return (
             <React.Fragment>
                 <Button label="Tambah" icon="pi pi-plus" className="p-button-success mr-2" onClick={openNew} />
@@ -289,6 +320,12 @@ const MutasiTabunganCrud = () => {
         <React.Fragment>
             <Button label="Tidak" icon="pi pi-times" outlined onClick={hideDeleteMutasiTabungansDialog} />
             <Button label="Ya" icon="pi pi-check" severity="danger" onClick={deleteSelectedMutasiTabungans} />
+        </React.Fragment>
+    );
+
+    const viewDialogFooter = (
+        <React.Fragment>
+            <Button label="Tutup" icon="pi pi-times" outlined onClick={hideViewDialog} />
         </React.Fragment>
     );
 
@@ -375,7 +412,7 @@ const MutasiTabunganCrud = () => {
                                 </div>
                             </div>
                             <div className="col-6">
-                            <div className="field">
+                                <div className="field">
                                     <label htmlFor="Keterangan">Keterangan</label>
                                     <InputText id="Keterangan" value={mutasiTabungan.Keterangan} onChange={(e) => onInputChange(e, 'Keterangan')} maxLength={255} />
                                 </div>
@@ -444,6 +481,59 @@ const MutasiTabunganCrud = () => {
                                 headerStyle={{ minWidth: '10rem' }}
                             ></Column>
                         </DataTable>
+                    </Dialog>
+
+                    <Dialog visible={viewDialog} style={{ width: '80%' }} header="Detail Mutasi" modal className="p-fluid" footer={viewDialogFooter} onHide={hideViewDialog}>
+                        <div className="grid">
+                            <div className="col-6">
+                                <div className="field">
+                                    <label htmlFor="Faktur">Faktur</label>
+                                    <InputText id="Faktur" value={mutasiTabungan.Faktur} readOnly />
+                                </div>
+                                <div className="field">
+                                    <label htmlFor="Tgl">Tanggal</label>
+                                    <InputText id="Tgl" value={new Date(mutasiTabungan.Tgl).toLocaleDateString()} readOnly />
+                                </div>
+                                <div className="field">
+                                    <label htmlFor="Rekening">Rekening</label>
+                                    <InputText id="Rekening" value={mutasiTabungan.Rekening} readOnly />
+                                </div>
+                                <div className="field">
+                                    <label htmlFor="KodeTransaksi">Kode Transaksi</label>
+                                    <InputText id="KodeTransaksi" value={mutasiTabungan.KodeTransaksi} readOnly />
+                                </div>
+                                <div className="field">
+                                    <label htmlFor="DK">D/K</label>
+                                    <InputText id="DK" value={mutasiTabungan.DK === 'D' ? 'Debet' : 'Kredit'} readOnly />
+                                </div>
+                            </div>
+                            <div className="col-6">
+                                <div className="field">
+                                    <label htmlFor="Keterangan">Keterangan</label>
+                                    <InputText id="Keterangan" value={mutasiTabungan.Keterangan} readOnly />
+                                </div>
+                                <div className="field">
+                                    <label htmlFor="Jumlah">Jumlah</label>
+                                    <InputText id="Jumlah" value={mutasiTabungan.Jumlah.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' })} readOnly />
+                                </div>
+                                <div className="field">
+                                    <label htmlFor="UserName">User Name</label>
+                                    <InputText id="UserName" value={mutasiTabungan.UserName} readOnly />
+                                </div>
+                                <div className="field">
+                                    <label htmlFor="DateTime">Date Time</label>
+                                    <InputText id="DateTime" value={new Date(mutasiTabungan.DateTime).toLocaleString()} readOnly />
+                                </div>
+                                <div className="field">
+                                    <label htmlFor="UserAcc">User Acc</label>
+                                    <InputText id="UserAcc" value={mutasiTabungan.UserAcc} readOnly />
+                                </div>
+                                <div className="field">
+                                    <label htmlFor="Denda">Denda</label>
+                                    <InputText id="Denda" value={mutasiTabungan.Denda.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' })} readOnly />
+                                </div>
+                            </div>
+                        </div>
                     </Dialog>
                 </div>
             </div>

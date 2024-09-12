@@ -14,8 +14,10 @@ import { classNames } from 'primereact/utils';
 import { Toolbar } from 'primereact/toolbar';
 import AngsuranApi from '@/services/AngsuranApi';
 import DebiturApi from '@/services/DebiturApi';
+import { useUser } from '@/context/userContext';
 
 const AngsuranCrud = () => {
+    const { user } = useUser();
     const [angsurans, setAngsurans] = useState(null);
     const [angsuranDialog, setAngsuranDialog] = useState(false);
     const [deleteAngsuranDialog, setDeleteAngsuranDialog] = useState(false);
@@ -39,6 +41,7 @@ const AngsuranCrud = () => {
         filters: null
     });
     const [totalRecords, setTotalRecords] = useState(0);
+    const [viewDialog, setViewDialog] = useState(false);
 
     useEffect(() => {
         const now = new Date();
@@ -78,7 +81,14 @@ const AngsuranCrud = () => {
                 sort_order: lazyParams.sortOrder,
                 search: globalFilter
             });
-            setAngsurans(response.data.data);
+
+            const formattedData = response.data.data.map(item => ({
+                ...item,
+                Tgl: new Date(item.Tgl),
+                DateTime: new Date(item.DateTime)
+            }));
+
+            setAngsurans(formattedData);
             setTotalRecords(response.data.total);
         } catch (error) {
             console.error('Error loading angsurans:', error);
@@ -118,11 +128,11 @@ const AngsuranCrud = () => {
                 let angsuranToSave = { ...angsuran };
 
                 if (angsuranToSave.Tgl) {
-                    angsuranToSave.Tgl = new Date(angsuranToSave.Tgl).toISOString().split('T')[0];
+                    angsuranToSave.Tgl = angsuranToSave.Tgl.toISOString().split('T')[0];
                 }
 
                 if (angsuranToSave.DateTime) {
-                    angsuranToSave.DateTime = new Date(angsuranToSave.DateTime).toISOString().slice(0, 19).replace('T', ' ');
+                    angsuranToSave.DateTime = angsuranToSave.DateTime.toISOString().slice(0, 19).replace('T', ' ');
                 }
 
                 let response;
@@ -145,13 +155,26 @@ const AngsuranCrud = () => {
     };
 
     const editAngsuran = (angsuran) => {
-        setAngsuran({ ...angsuran });
+        setAngsuran({
+            ...angsuran,
+            Tgl: new Date(angsuran.Tgl),
+            DateTime: new Date(angsuran.DateTime)
+        });
         setAngsuranDialog(true);
     };
 
     const confirmDeleteAngsuran = (angsuran) => {
         setAngsuran(angsuran);
         setDeleteAngsuranDialog(true);
+    };
+
+    const viewAngsuran = (angsuran) => {
+        setAngsuran({ ...angsuran });
+        setViewDialog(true);
+    };
+
+    const hideViewDialog = () => {
+        setViewDialog(false);
     };
 
     const deleteAngsuran = async () => {
@@ -228,6 +251,12 @@ const AngsuranCrud = () => {
     };
 
     const actionBodyTemplate = (rowData) => {
+        if (!user || user.role === 'collector') {
+            return (
+                <Button icon="pi pi-eye" rounded outlined className="mr-2" onClick={() => viewAngsuran(rowData)} />
+            );
+        }
+
         return (
             <React.Fragment>
                 <Button icon="pi pi-pencil" rounded outlined className="mr-2" onClick={() => editAngsuran(rowData)} />
@@ -241,6 +270,10 @@ const AngsuranCrud = () => {
     };
 
     const leftToolbarTemplate = () => {
+        if (!user || user.role === 'collector') {
+            return null;
+        }
+
         return (
             <React.Fragment>
                 <Button label="Tambah" icon="pi pi-plus" className="p-button-success mr-2" onClick={openNew} />
@@ -297,6 +330,12 @@ const AngsuranCrud = () => {
         </React.Fragment>
     );
 
+    const viewDialogFooter = (
+        <React.Fragment>
+            <Button label="Tutup" icon="pi pi-times" outlined onClick={hideViewDialog} />
+        </React.Fragment>
+    );
+
     return (
         <div className="grid crud-demo">
             <div className="col-12">
@@ -346,80 +385,80 @@ const AngsuranCrud = () => {
                                 <div className="field">
                                     <label htmlFor="CabangEntry">Cabang Entry</label>
                                     <InputText id="CabangEntry" value={angsuran.CabangEntry} onChange={(e) => onInputChange(e, 'CabangEntry')} maxLength={3} />
-                        </div>
-                            <div className="field">
-                                <label htmlFor="Status">Status</label>
-                                <InputText id="Status" value={angsuran.Status} onChange={(e) => onInputChange(e, 'Status')} maxLength={1} />
-                        </div>
-                        <div className="field">
-                            <label htmlFor="Faktur">Faktur</label>
-                            <InputText id="Faktur" value={angsuran.Faktur} readOnly className={classNames({ 'p-invalid': submitted && !angsuran.Faktur })} maxLength={20} />
-                            {submitted && !angsuran.Faktur && <small className="p-invalid">Faktur is required.</small>}
-                        </div>
-                        <div className="field">
-                            <label htmlFor="Tgl">Tanggal</label>
-                            <Calendar id="Tgl" value={angsuran.Tgl} onChange={(e) => onDateChange(e, 'Tgl')} showIcon dateFormat="dd/mm/yy" />
-                        </div>
-                        <div className="field">
-                            <label htmlFor="Rekening">Rekening</label>
-                            <div className="p-inputgroup">
-                            <InputText id="Rekening" value={angsuran.Rekening} onChange={(e) => onInputChange(e, 'Rekening')} maxLength={15} />
-                            <Button icon="pi pi-search" className="p-button-warning" onClick={openDebiturDialog} />
-                        </div>
-                        </div>
-                            <div className="field">
-                            <label htmlFor="Keterangan">Keterangan</label>
-                            <InputText id="Keterangan" value={angsuran.Keterangan} onChange={(e) => onInputChange(e, 'Keterangan')} maxLength={255} />
-                        </div>
-                        <div className="field">
-                            <label htmlFor="DPokok">Debet Pokok</label>
-                            <InputNumber id="DPokok" value={angsuran.DPokok} onValueChange={(e) => onInputNumberChange(e, 'DPokok')} mode="currency" currency="IDR" locale="id-ID" />
-                        </div>
-                        <div className="field">
-                            <label htmlFor="KPokok">Kredit Pokok</label>
-                            <InputNumber id="KPokok" value={angsuran.KPokok} onValueChange={(e) => onInputNumberChange(e, 'KPokok')} mode="currency" currency="IDR" locale="id-ID" />
-                        </div>
-                        </div>
+                                </div>
+                                <div className="field">
+                                    <label htmlFor="Status">Status</label>
+                                    <InputText id="Status" value={angsuran.Status} onChange={(e) => onInputChange(e, 'Status')} maxLength={1} />
+                                </div>
+                                <div className="field">
+                                    <label htmlFor="Faktur">Faktur</label>
+                                    <InputText id="Faktur" value={angsuran.Faktur} readOnly className={classNames({ 'p-invalid': submitted && !angsuran.Faktur })} maxLength={20} />
+                                    {submitted && !angsuran.Faktur && <small className="p-invalid">Faktur is required.</small>}
+                                </div>
+                                <div className="field">
+                                    <label htmlFor="Tgl">Tanggal</label>
+                                    <Calendar id="Tgl" value={angsuran.Tgl} onChange={(e) => onDateChange(e, 'Tgl')} showIcon dateFormat="dd/mm/yy" />
+                                </div>
+                                <div className="field">
+                                    <label htmlFor="Rekening">Rekening</label>
+                                    <div className="p-inputgroup">
+                                        <InputText id="Rekening" value={angsuran.Rekening} onChange={(e) => onInputChange(e, 'Rekening')} maxLength={15} />
+                                        <Button icon="pi pi-search" className="p-button-warning" onClick={openDebiturDialog} />
+                                    </div>
+                                </div>
+                                <div className="field">
+                                    <label htmlFor="Keterangan">Keterangan</label>
+                                    <InputText id="Keterangan" value={angsuran.Keterangan} onChange={(e) => onInputChange(e, 'Keterangan')} maxLength={255} />
+                                </div>
+                                <div className="field">
+                                    <label htmlFor="DPokok">Debet Pokok</label>
+                                    <InputNumber id="DPokok" value={angsuran.DPokok} onValueChange={(e) => onInputNumberChange(e, 'DPokok')} mode="currency" currency="IDR" locale="id-ID" />
+                                </div>
+                                <div className="field">
+                                    <label htmlFor="KPokok">Kredit Pokok</label>
+                                    <InputNumber id="KPokok" value={angsuran.KPokok} onValueChange={(e) => onInputNumberChange(e, 'KPokok')} mode="currency" currency="IDR" locale="id-ID" />
+                                </div>
+                            </div>
                             <div className="col-6">
-                            <div className="field">
-                            <label htmlFor="DBunga">Debet Bunga</label>
-                            <InputNumber id="DBunga" value={angsuran.DBunga} onValueChange={(e) => onInputNumberChange(e, 'DBunga')} mode="currency" currency="IDR" locale="id-ID" />
+                                <div className="field">
+                                    <label htmlFor="DBunga">Debet Bunga</label>
+                                    <InputNumber id="DBunga" value={angsuran.DBunga} onValueChange={(e) => onInputNumberChange(e, 'DBunga')} mode="currency" currency="IDR" locale="id-ID" />
+                                </div>
+                                <div className="field">
+                                    <label htmlFor="KBunga">Kredit Bunga</label>
+                                    <InputNumber id="KBunga" value={angsuran.KBunga} onValueChange={(e) => onInputNumberChange(e, 'KBunga')} mode="currency" currency="IDR" locale="id-ID" />
+                                </div>
+                                <div className="field">
+                                    <label htmlFor="Denda">Denda</label>
+                                    <InputNumber id="Denda" value={angsuran.Denda} onValueChange={(e) => onInputNumberChange(e, 'Denda')} mode="currency" currency="IDR" locale="id-ID" />
+                                </div>
+                                <div className="field">
+                                    <label htmlFor="Administrasi">Administrasi</label>
+                                    <InputNumber id="Administrasi" value={angsuran.Administrasi} onValueChange={(e) => onInputNumberChange(e, 'Administrasi')} mode="currency" currency="IDR" locale="id-ID" />
+                                </div>
+                                <div className="field">
+                                    <label htmlFor="Kas">Kas</label>
+                                    <Dropdown
+                                        id="Kas"
+                                        value={angsuran.Kas}
+                                        options={[
+                                            { label: 'Kredit', value: 'K' },
+                                            { label: 'Debet', value: 'D' }
+                                        ]}
+                                        onChange={(e) => onInputChange(e, 'Kas')}
+                                        placeholder="Pilih Kas"
+                                    />
+                                </div>
+                                <div className="field">
+                                    <label htmlFor="DateTime">Date Time</label>
+                                    <Calendar id="DateTime" value={angsuran.DateTime} onChange={(e) => onDateChange(e, 'DateTime')} showIcon showTime hourFormat="24" />
+                                </div>
+                                <div className="field">
+                                    <label htmlFor="UserName">User Name</label>
+                                    <InputText id="UserName" value={angsuran.UserName} onChange={(e) => onInputChange(e, 'UserName')} maxLength={20} />
+                                </div>
+                            </div>
                         </div>
-                <div className="field">
-                    <label htmlFor="KBunga">Kredit Bunga</label>
-                    <InputNumber id="KBunga" value={angsuran.KBunga} onValueChange={(e) => onInputNumberChange(e, 'KBunga')} mode="currency" currency="IDR" locale="id-ID" />
-                </div>
-                <div className="field">
-                    <label htmlFor="Denda">Denda</label>
-                    <InputNumber id="Denda" value={angsuran.Denda} onValueChange={(e) => onInputNumberChange(e, 'Denda')} mode="currency" currency="IDR" locale="id-ID" />
-                </div>
-                <div className="field">
-                    <label htmlFor="Administrasi">Administrasi</label>
-                    <InputNumber id="Administrasi" value={angsuran.Administrasi} onValueChange={(e) => onInputNumberChange(e, 'Administrasi')} mode="currency" currency="IDR" locale="id-ID" />
-                </div>
-                <div className="field">
-                    <label htmlFor="Kas">Kas</label>
-                    <Dropdown
-                        id="Kas"
-                        value={angsuran.Kas}
-                        options={[
-                            { label: 'Kredit', value: 'K' },
-                            { label: 'Debet', value: 'D' }
-                        ]}
-                        onChange={(e) => onInputChange(e, 'Kas')}
-                        placeholder="Pilih Kas"
-                    />
-                </div>
-                <div className="field">
-                    <label htmlFor="DateTime">Date Time</label>
-                    <Calendar id="DateTime" value={angsuran.DateTime} onChange={(e) => onDateChange(e, 'DateTime')} showIcon showTime hourFormat="24" />
-                </div>
-                <div className="field">
-                    <label htmlFor="UserName">User Name</label>
-                    <InputText id="UserName" value={angsuran.UserName} onChange={(e) => onInputChange(e, 'UserName')} maxLength={20} />
-                          </div>
-                        </div>
-                     </div>
                     </Dialog>
 
                     <Dialog visible={deleteAngsuranDialog} style={{ width: '450px' }} header="Konfirmasi Hapus" modal footer={deleteAngsuranDialogFooter} onHide={hideDeleteAngsuranDialog}>
@@ -462,6 +501,75 @@ const AngsuranCrud = () => {
                                 headerStyle={{ minWidth: '10rem' }}
                             ></Column>
                         </DataTable>
+                    </Dialog>
+
+                    <Dialog visible={viewDialog} style={{ width: '80%' }} header="Detail Angsuran" modal className="p-fluid" footer={viewDialogFooter} onHide={hideViewDialog}>
+                        <div className="grid">
+                            <div className="col-6">
+                                <div className="field">
+                                    <label htmlFor="CabangEntry">Cabang Entry</label>
+                                    <InputText id="CabangEntry" value={angsuran.CabangEntry} readOnly />
+                                </div>
+                                <div className="field">
+                                    <label htmlFor="Status">Status</label>
+                                    <InputText id="Status" value={angsuran.Status} readOnly />
+                                </div>
+                                <div className="field">
+                                    <label htmlFor="Faktur">Faktur</label>
+                                    <InputText id="Faktur" value={angsuran.Faktur} readOnly />
+                                </div>
+                                <div className="field">
+                                    <label htmlFor="Tgl">Tanggal</label>
+                                    <InputText id="Tgl" value={new Date(angsuran.Tgl).toLocaleDateString()} readOnly />
+                                </div>
+                                <div className="field">
+                                    <label htmlFor="Rekening">Rekening</label>
+                                    <InputText id="Rekening" value={angsuran.Rekening} readOnly />
+                                </div>
+                                <div className="field">
+                                    <label htmlFor="Keterangan">Keterangan</label>
+                                    <InputText id="Keterangan" value={angsuran.Keterangan} readOnly />
+                                </div>
+                                <div className="field">
+                                    <label htmlFor="DPokok">Debet Pokok</label>
+                                    <InputText id="DPokok" value={angsuran.DPokok.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' })} readOnly />
+                                </div>
+                                <div className="field">
+                                    <label htmlFor="KPokok">Kredit Pokok</label>
+                                    <InputText id="KPokok" value={angsuran.KPokok.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' })} readOnly />
+                                </div>
+                            </div>
+                            <div className="col-6">
+                                <div className="field">
+                                    <label htmlFor="DBunga">Debet Bunga</label>
+                                    <InputText id="DBunga" value={angsuran.DBunga.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' })} readOnly />
+                                </div>
+                                <div className="field">
+                                    <label htmlFor="KBunga">Kredit Bunga</label>
+                                    <InputText id="KBunga" value={angsuran.KBunga.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' })} readOnly />
+                                </div>
+                                <div className="field">
+                                    <label htmlFor="Denda">Denda</label>
+                                    <InputText id="Denda" value={angsuran.Denda.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' })} readOnly />
+                                </div>
+                                <div className="field">
+                                    <label htmlFor="Administrasi">Administrasi</label>
+                                    <InputText id="Administrasi" value={angsuran.Administrasi.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' })} readOnly />
+                                </div>
+                                <div className="field">
+                                    <label htmlFor="Kas">Kas</label>
+                                    <InputText id="Kas" value={angsuran.Kas} readOnly />
+                                </div>
+                                <div className="field">
+                                    <label htmlFor="DateTime">Date Time</label>
+                                    <InputText id="DateTime" value={angsuran.DateTime} readOnly />
+                                </div>
+                                <div className="field">
+                                    <label htmlFor="UserName">User Name</label>
+                                    <InputText id="UserName" value={angsuran.UserName} readOnly />
+                                </div>
+                            </div>
+                        </div>
                     </Dialog>
                 </div>
             </div>
