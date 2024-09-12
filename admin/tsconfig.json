@@ -41,7 +41,8 @@
     "app/(main)/users/page.jsx",
     "app/(main)/pages/crud/page.jsx",
     "app/(full-page)/auth/login/page.jsx",
-    "app/(main)/layout.jsx"
+    "app/(main)/layout.jsx",
+    "layout/AppMenu.js"
   ],
   "exclude": [
     "node_modules"

@@ -4,16 +4,19 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Layout from '../../layout/layout';
 import AuthApi from '../../services/AuthApi';
+import { UserProvider } from '../../context/userContext';
 
 export default function AppLayout({ children }) {
     const [isLoading, setIsLoading] = useState(true);
+    const [user, setUser] = useState(null);
     const router = useRouter();
 
     useEffect(() => {
         async function checkAuth() {
             try {
                 const response = await AuthApi.getCurrentUser();
-
+                // Update this line to correctly set the user data
+                setUser(response.data.user);
                 setIsLoading(false);
             } catch (error) {
                 console.error('Authentication error:', error);
@@ -32,5 +35,9 @@ export default function AppLayout({ children }) {
         </div>
     }
 
-    return <Layout>{children}</Layout>;
+    return (
+        <UserProvider value={{ user, setUser }}>
+            <Layout>{children}</Layout>
+        </UserProvider>
+    );
 }
