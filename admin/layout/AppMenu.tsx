@@ -9,8 +9,6 @@ const AppMenu = () => {
     const { layoutConfig } = useContext(LayoutContext);
     const { user } = useUser();
 
-    console.log('User in AppMenu:', user);
-
     const model: AppMenuItem[] = [
         {
             label: 'Beranda',
