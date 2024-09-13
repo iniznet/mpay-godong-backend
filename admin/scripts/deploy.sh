@@ -49,10 +49,14 @@ echo "===================================="
 npm install
 
 echo "===================================="
+echo "Building the project..."
+echo "===================================="
+npm run build
+
+echo "===================================="
 echo "Restarting PM2 process..."
 echo "===================================="
-# Replace 'your-app-name' with the actual name of your PM2 process
-pm2 restart your-app-name
+pm2 restart "godong mpay admin"
 
 echo "===================================="
 echo "Deployment finished"
