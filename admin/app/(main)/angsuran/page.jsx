@@ -489,7 +489,7 @@ const AngsuranCrud = () => {
                             emptyMessage="No rekenings found."
                         >
                             <Column field="Rekening" header="Rekening" sortable body={(rowData) => <span>{rowData.Rekening}</span>} headerStyle={{ minWidth: '15rem' }}></Column>
-                            <Column field="NamaNasabah" header="Nama" sortable body={(rowData) => <span>{rowData.tabungan.NamaNasabah}</span>} headerStyle={{ minWidth: '15rem' }}></Column>
+                            <Column field="nasabah.Nama" header="Nama" sortable body={(rowData) => <span>{rowData.nasabah.Nama}</span>} headerStyle={{ minWidth: '15rem' }}></Column>
                             <Column
                                 body={(rowData) => (
                                     <Button
