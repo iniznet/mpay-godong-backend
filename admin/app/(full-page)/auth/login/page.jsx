@@ -35,7 +35,7 @@ const LoginPage = () => {
         } catch (error) {
             if (error.response && error.response.data) {
                 const { message, errors } = error.response.data;
-                console.log('Error:', message, errors);
+                console.error('Error:', message, errors);
                 toast.current?.show({ severity: 'error', summary: 'Error', detail: message, life: 3000 });
                 setErrors(errors);
             } else {
