@@ -14,8 +14,10 @@ import { classNames } from 'primereact/utils';
 import TabunganApi from '@/services/TabunganApi';
 import NasabahApi from '@/services/NasabahApi';
 import { Toolbar } from 'primereact/toolbar';
+import { useUser } from '@/context/userContext';
 
 const TabunganCrud = () => {
+    const { user } = useUser();
     const [tabungans, setTabungans] = useState(null);
     const [tabunganDialog, setTabunganDialog] = useState(false);
     const [deleteTabunganDialog, setDeleteTabunganDialog] = useState(false);
@@ -59,7 +61,7 @@ const TabunganCrud = () => {
             KeteranganBlokir: '',
             SaldoAkhir: 0,
             Pekerjaan: '',
-            UserName: ''
+            UserName: user.username
         };
     }
 
@@ -323,7 +325,7 @@ const TabunganCrud = () => {
                     </DataTable>
 
                     <Dialog visible={tabunganDialog} style={{ width: '80%' }} header="Detail Tabungan" modal className="p-fluid" footer={tabunganDialogFooter} onHide={hideDialog}>
-                    <div className="grid">
+                        <div className="grid">
                             <div className="col-12 md:col-6">
                                 <div className="field">
                                     <label htmlFor="Rekening">Rekening</label>
