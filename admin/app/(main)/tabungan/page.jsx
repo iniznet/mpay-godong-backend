@@ -108,14 +108,15 @@ const TabunganCrud = () => {
 
         if (tabungan.Rekening.trim()) {
             try {
-                tabungan.Tgl = tabungan.Tgl ? tabungan.Tgl.toISOString().split('T')[0] : null;
-                tabungan.TglPenutupan = tabungan.TglPenutupan ? tabungan.TglPenutupan.toISOString().split('T')[0] : null;
+                let tabunganToSave = { ...tabungan };
+                tabunganToSave.Tgl = tabungan.Tgl ? tabungan.Tgl.toISOString().split('T')[0] : null;
+                tabunganToSave.TglPenutupan = tabungan.TglPenutupan ? tabungan.TglPenutupan.toISOString().split('T')[0] : null;
 
                 if (tabungan.ID) {
-                    await TabunganApi.updateTabungan(tabungan.ID, tabungan);
+                    await TabunganApi.updateTabungan(tabungan.ID, tabunganToSave);
                     toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Data tabungan berhasil diubah', life: 3000 });
                 } else {
-                    await TabunganApi.createTabungan(tabungan);
+                    await TabunganApi.createTabungan(tabunganToSave);
                     toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Berhasil menambahkan tabungan baru', life: 3000 });
                 }
 
