@@ -16,7 +16,8 @@ class AngsuranController extends Controller
             $searchTerm = $request->search;
             $query->where(function ($q) use ($searchTerm) {
                 $q->where('Faktur', 'like', "%{$searchTerm}%")
-                  ->orWhere('Rekening', 'like', "%{$searchTerm}%");
+                    ->orWhere('Rekening', 'like', "%{$searchTerm}%")
+                    ->orWhere('UserName', 'like', "%{$searchTerm}%");
             });
         }
 

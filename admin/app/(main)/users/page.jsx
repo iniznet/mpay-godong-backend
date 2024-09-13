@@ -14,6 +14,7 @@ import UserApi from '@/services/UserApi';
 const UserCrud = () => {
     let emptyUser = {
         id: null,
+        username: '',
         name: '',
         email: '',
         role: '',
@@ -43,7 +44,6 @@ const UserCrud = () => {
 
     const roleOptions = [
         { label: 'Admin', value: 'admin' },
-        { label: 'Kustomer', value: 'customer' },
         { label: 'Kolektor', value: 'collector' }
     ];
 
@@ -93,7 +93,7 @@ const UserCrud = () => {
     const saveUser = async () => {
         setSubmitted(true);
 
-        if (user.name.trim() && user.email.trim() && user.role) {
+        if (user.username.trim() && user.email.trim() && user.role) {
             try {
                 if (user.id) {
                     await UserApi.updateUser(user.id, user);
@@ -262,6 +262,7 @@ const UserCrud = () => {
                         onFilter={(e) => setLazyParams({ ...lazyParams, ...e })}
                     >
                         <Column selectionMode="multiple" headerStyle={{ width: '4rem' }}></Column>
+                        <Column field="username" header="Username" sortable body={(rowData) => <span>{rowData.username}</span>} headerStyle={{ minWidth: '15rem' }}></Column>
                         <Column field="name" header="Nama" sortable body={(rowData) => <span>{rowData.name}</span>} headerStyle={{ minWidth: '15rem' }}></Column>
                         <Column field="email" header="Email" sortable body={(rowData) => <span>{rowData.email}</span>} headerStyle={{ minWidth: '15rem' }}></Column>
                         <Column field="role" header="Peran" sortable body={(rowData) => <span>{rowData.role}</span>} headerStyle={{ minWidth: '10rem' }}></Column>
@@ -269,6 +270,11 @@ const UserCrud = () => {
                     </DataTable>
 
                     <Dialog visible={userDialog} style={{ width: '450px' }} header="User Details" modal className="p-fluid" footer={userDialogFooter} onHide={hideDialog}>
+                        <div className="field">
+                            <label htmlFor="username">Username</label>
+                            <InputText id="username" value={user.username} onChange={(e) => onInputChange(e, 'username')} required autoFocus className={classNames({ 'p-invalid': submitted && !user.username })} />
+                            {submitted && !user.username && <small className="p-invalid">Nama wajib diisi.</small>}
+                        </div>
                         <div className="field">
                             <label htmlFor="name">Nama</label>
                             <InputText id="name" value={user.name} onChange={(e) => onInputChange(e, 'name')} required autoFocus className={classNames({ 'p-invalid': submitted && !user.name })} />

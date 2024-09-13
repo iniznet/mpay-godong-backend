@@ -35,7 +35,7 @@ const MutasiTabunganCrud = () => {
     const [lazyParams, setLazyParams] = useState({
         first: 0,
         rows: 10,
-        page: 1,
+        page: 0,
         sortField: null,
         sortOrder: null,
         filters: null
@@ -61,7 +61,7 @@ const MutasiTabunganCrud = () => {
             Jumlah: 0,
             Debet: 0,
             Kredit: 0,
-            UserName: '',
+            UserName: user.username,
             DateTime: now,
             UserAcc: '',
             Denda: 0
@@ -72,7 +72,7 @@ const MutasiTabunganCrud = () => {
         setLoading(true);
         try {
             const response = await MutasiTabunganApi.getMutasiTabungans({
-                page: lazyParams.page,
+                page: lazyParams.page + 1,
                 per_page: lazyParams.rows,
                 sort_field: lazyParams.sortField,
                 sort_order: lazyParams.sortOrder,
@@ -93,7 +93,7 @@ const MutasiTabunganCrud = () => {
     };
 
     const openNew = async () => {
-        setMutasiTabungan(initEmptyMutasiTabungan());
+        await setMutasiTabungan(initEmptyMutasiTabungan());
 
         const response = await MutasiTabunganApi.getNextFaktur();
         setMutasiTabungan(prev => ({ ...mutasiTabungan, Faktur: response.data.faktur }));
@@ -342,9 +342,6 @@ const MutasiTabunganCrud = () => {
                         selection={selectedMutasiTabungans}
                         onSelectionChange={(e) => setSelectedMutasiTabungans(e.value)}
                         dataKey="ID"
-                        paginator
-                        rows={lazyParams.rows}
-                        rowsPerPageOptions={[5, 10, 25]}
                         className="datatable-responsive"
                         paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                         currentPageReportTemplate="Showing {first} to {last} of {totalRecords} mutasi tabungans"
@@ -353,12 +350,14 @@ const MutasiTabunganCrud = () => {
                         header={header}
                         responsiveLayout="scroll"
                         lazy
-                        totalRecords={totalRecords}
-                        loading={loading}
+                        paginator
                         first={lazyParams.first}
-                        onPage={(e) => setLazyParams({ ...lazyParams, ...e })}
-                        onSort={(e) => setLazyParams({ ...lazyParams, ...e })}
-                        onFilter={(e) => setLazyParams({ ...lazyParams, ...e })}
+                        rows={lazyParams.rows}
+                        rowsPerPageOptions={[5, 10, 25]}
+                        totalRecords={totalRecords}
+                        onPage={(e) => setLazyParams({ ...lazyParams, first: e.first, page: e.page })}
+                        onSort={(e) => setLazyParams({ ...lazyParams, sortField: e.sortField, sortOrder: e.sortOrder })}
+                        onFilter={(e) => setLazyParams({ ...lazyParams, filters: e.filters })}
                     >
                         <Column selectionMode="multiple" headerStyle={{ width: '4rem' }}></Column>
                         <Column field="Faktur" header="Faktur" sortable body={(rowData) => <span>{rowData.Faktur}</span>} headerStyle={{ minWidth: '15rem' }}></Column>

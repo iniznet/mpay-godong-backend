@@ -67,7 +67,7 @@ const AngsuranCrud = () => {
             Administrasi: 0,
             Kas: 'K',
             DateTime: null,
-            UserName: ''
+            UserName: user.username
         };
     }
 

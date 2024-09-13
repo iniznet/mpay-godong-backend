@@ -17,7 +17,8 @@ class TabunganController extends Controller
             $searchTerm = request()->search;
             $query->where('Kode', 'like', "%{$searchTerm}%")
                 ->orWhere('Rekening', 'like', "%{$searchTerm}%")
-                ->orWhere('NamaNasabah', 'like', "%{$searchTerm}%");
+                ->orWhere('NamaNasabah', 'like', "%{$searchTerm}%")
+                ->orWhere('UserName', 'like', "%{$searchTerm}%");
         }
 
         if (request()->has('sort_field') && request()->has('sort_order')) {
