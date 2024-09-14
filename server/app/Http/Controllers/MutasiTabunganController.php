@@ -19,7 +19,8 @@ class MutasiTabunganController extends Controller
             $searchTerm = request()->search;
             $query->where('Rekening', 'like', "%{$searchTerm}%")
                 ->orWhere('KodeTransaksi', 'like', "%{$searchTerm}%")
-                ->orWhere('Keterangan', 'like', "%{$searchTerm}%");
+                ->orWhere('Keterangan', 'like', "%{$searchTerm}%")
+                ->orWhere('UserName', 'like', "%{$searchTerm}%");
         }
 
         if (request()->has('sort_field') && request()->has('sort_order')) {

@@ -14,8 +14,10 @@ import { classNames } from 'primereact/utils';
 import TabunganApi from '@/services/TabunganApi';
 import NasabahApi from '@/services/NasabahApi';
 import { Toolbar } from 'primereact/toolbar';
+import { useUser } from '@/context/userContext';
 
 const TabunganCrud = () => {
+    const { user } = useUser();
     const [tabungans, setTabungans] = useState(null);
     const [tabunganDialog, setTabunganDialog] = useState(false);
     const [deleteTabunganDialog, setDeleteTabunganDialog] = useState(false);
@@ -59,7 +61,7 @@ const TabunganCrud = () => {
             KeteranganBlokir: '',
             SaldoAkhir: 0,
             Pekerjaan: '',
-            UserName: ''
+            UserName: user.username
         };
     }
 
@@ -106,14 +108,15 @@ const TabunganCrud = () => {
 
         if (tabungan.Rekening.trim()) {
             try {
-                tabungan.Tgl = tabungan.Tgl ? tabungan.Tgl.toISOString().split('T')[0] : null;
-                tabungan.TglPenutupan = tabungan.TglPenutupan ? tabungan.TglPenutupan.toISOString().split('T')[0] : null;
+                let tabunganToSave = { ...tabungan };
+                tabunganToSave.Tgl = tabungan.Tgl ? tabungan.Tgl.toISOString().split('T')[0] : null;
+                tabunganToSave.TglPenutupan = tabungan.TglPenutupan ? tabungan.TglPenutupan.toISOString().split('T')[0] : null;
 
                 if (tabungan.ID) {
-                    await TabunganApi.updateTabungan(tabungan.ID, tabungan);
+                    await TabunganApi.updateTabungan(tabungan.ID, tabunganToSave);
                     toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Data tabungan berhasil diubah', life: 3000 });
                 } else {
-                    await TabunganApi.createTabungan(tabungan);
+                    await TabunganApi.createTabungan(tabunganToSave);
                     toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Berhasil menambahkan tabungan baru', life: 3000 });
                 }
 
@@ -323,7 +326,7 @@ const TabunganCrud = () => {
                     </DataTable>
 
                     <Dialog visible={tabunganDialog} style={{ width: '80%' }} header="Detail Tabungan" modal className="p-fluid" footer={tabunganDialogFooter} onHide={hideDialog}>
-                    <div className="grid">
+                        <div className="grid">
                             <div className="col-12 md:col-6">
                                 <div className="field">
                                     <label htmlFor="Rekening">Rekening</label>
