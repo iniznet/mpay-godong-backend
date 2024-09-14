@@ -54,6 +54,7 @@ const DebiturCrud = () => {
             Kode: '',
             Faktur: '',
             Rekening: '',
+            NamaNasabah: '',
             RekeningLama: '',
             Tgl: new Date(),
             StatusPencairan: '0',
@@ -384,6 +385,10 @@ const DebiturCrud = () => {
                                     <label htmlFor="Rekening">Rekening</label>
                                     <InputText id="Rekening" value={debitur.Rekening} onChange={(e) => onInputChange(e, 'Rekening')} required autoFocus className={classNames({ 'p-invalid': submitted && !debitur.Rekening })} />
                                     {submitted && !debitur.Rekening && <small className="p-invalid">Rekening is required.</small>}
+                                </div>
+                                <div className="field">
+                                    <label htmlFor="NamaNasabah">Nama Nasabah</label>
+                                    <InputText id="NamaNasabah" value={debitur.NamaNasabah} onChange={(e) => onInputChange(e, 'NamaNasabah')} required />
                                 </div>
                                 <div className="field">
                                     <label htmlFor="Faktur">Faktur</label>
