@@ -26,7 +26,7 @@ class AngsuranController extends Controller
         }
 
         $perPage = $request->input('per_page', 10);
-        $angsurans = $query->paginate($perPage);
+        $angsurans = $perPage != -1 ? $query->paginate($perPage) : $query->get();
 
         return response()->json($angsurans);
     }
