@@ -96,9 +96,6 @@ const LoginPage = () => {
                                     <Checkbox inputId="rememberme1" checked={checked} onChange={(e) => setChecked(e.checked ?? false)} className="mr-2"></Checkbox>
                                     <label htmlFor="rememberme1">Remember me</label>
                                 </div>
-                                <a className="font-medium no-underline ml-2 text-right cursor-pointer" style={{ color: 'var(--primary-color)' }}>
-                                    Forgot password?
-                                </a>
                             </div>
                             <Button label="Sign In" className="w-full p-3 text-xl" onClick={handleLogin} loading={loading}></Button>
                         </div>
