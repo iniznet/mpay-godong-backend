@@ -96,10 +96,8 @@ const DebiturCrud = () => {
     };
 
     const openNew = async () => {
-        setDebitur(initEmptyDebitur());
-
         const response = await DebiturApi.getNextFaktur();
-        setDebitur({ ...debitur, Faktur: response.data.faktur });
+        setDebitur({ ...initEmptyDebitur(), Faktur: response.data.faktur });
 
         setSubmitted(false);
         setDebiturDialog(true);

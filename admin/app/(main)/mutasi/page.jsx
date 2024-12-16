@@ -93,11 +93,9 @@ const MutasiTabunganCrud = () => {
     };
 
     const openNew = async () => {
-        await setMutasiTabungan(initEmptyMutasiTabungan());
-
         const fakturResponse = await MutasiTabunganApi.getNextFaktur();
         const KodeTransaksiResponse = await MutasiTabunganApi.getKodeTransaksi();
-        setMutasiTabungan(prev => ({ ...mutasiTabungan, Faktur: fakturResponse.data.faktur, KodeTransaksi: KodeTransaksiResponse.data.kode_transaksi }));
+        setMutasiTabungan(prev => ({ ...initEmptyMutasiTabungan(), Faktur: fakturResponse.data.faktur, KodeTransaksi: KodeTransaksiResponse.data.kode_transaksi }));
 
         setSubmitted(false);
         setMutasiTabunganDialog(true);
