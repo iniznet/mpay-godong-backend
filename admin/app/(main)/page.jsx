@@ -202,23 +202,19 @@ const Dashboard = () => {
                 <div className="card">
                     <div className="flex justify-content-between align-items-center mb-5">
                         <h5>Debitur Teratas</h5>
-                        <div>
-                            <Button type="button" icon="pi pi-ellipsis-v" className="p-button-rounded p-button-text p-button-plain" onClick={(event) => menu1.current.toggle(event)} />
-                            <Menu ref={menu1} popup model={[{ label: 'Add New', icon: 'pi pi-fw pi-plus' }, { label: 'Remove', icon: 'pi pi-fw pi-minus' }]} />
-                        </div>
                     </div>
                     <ul className="list-none p-0 m-0">
                         {topDebtors.map((debtor, i) => (
                             <li key={debtor.ID} className="flex flex-column md:flex-row md:align-items-center md:justify-content-between mb-4">
                                 <div>
-                                    <span className="text-900 font-medium mr-2 mb-1 md:mb-0">{debtor.Rekening}</span>
-                                    <div className="mt-1 text-600">{debtor.NoPengajuan}</div>
+                                    <span className="text-900 font-medium mr-2 mb-1 md:mb-0">{debtor.nasabah.Nama}</span>
+                                    <div className="mt-1 text-600">{debtor.Rekening} - {debtor.NoPengajuan}</div>
                                 </div>
                                 <div className="mt-2 md:mt-0 flex align-items-center">
                                     <div className="surface-300 border-round overflow-hidden w-10rem lg:w-6rem" style={{ height: '8px' }}>
                                         <div className={`bg-${['orange', 'cyan', 'pink', 'green', 'indigo'][i]}-500 h-full`} style={{ width: '50%' }} />
                                     </div>
-                                    <span className="text-orange-500 ml-3 font-medium">{formatCurrency(debtor.SaldoPokok)}</span>
+                                    <span className="text-orange-500 ml-3 font-medium">{formatCurrency(debtor.Plafond)}</span>
                                 </div>
                             </li>
                         ))}
@@ -234,14 +230,9 @@ const Dashboard = () => {
 
                 <div className="card">
                     <div className="flex align-items-center justify-content-between mb-4">
-                        <h5>Notifikasi</h5>
-                        <div>
-                            <Button type="button" icon="pi pi-ellipsis-v" className="p-button-rounded p-button-text p-button-plain" onClick={(event) => menu2.current.toggle(event)} />
-                            <Menu ref={menu2} popup model={[{ label: 'Add New', icon: 'pi pi-fw pi-plus' }, { label: 'Remove', icon: 'pi pi-fw pi-minus' }]} />
-                        </div>
+                        <h5>Notifikasi Terbaru</h5>
                     </div>
 
-                    <span className="block text-600 font-medium mb-3">TODAY</span>
                     <ul className="p-0 mx-0 mt-0 mb-4 list-none">
                         {notifications.map((notification, index) => (
                             <li key={index} className="flex align-items-center py-2 border-bottom-1 surface-border">
@@ -251,6 +242,7 @@ const Dashboard = () => {
                                 <span className="text-900 line-height-3">
                                     {notification.title}
                                     <span className="text-700"> {notification.description}</span>
+                                    <small className="text-500 block">{notification.date}</small>
                                 </span>
                             </li>
                         ))}

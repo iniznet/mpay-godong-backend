@@ -55,8 +55,9 @@ class DashboardController extends Controller
     public function getTopProducts()
     {
         $topDebtors = Debitur::orderBy('SaldoPokok', 'desc')
+            ->with('nasabah')
             ->take(5)
-            ->get(['ID', 'Rekening', 'NoPengajuan', 'SaldoPokok']);
+            ->get();
 
         return response()->json($topDebtors);
     }
@@ -73,8 +74,6 @@ class DashboardController extends Controller
 
     public function getNotifications()
     {
-        // For this example, we'll use recent transactions as notifications
-        // In a real-world scenario, you might have a separate notifications table
         $recentTransactions = MutasiTabungan::orderBy('Tgl', 'desc')
             ->take(5)
             ->get(['Tgl', 'Rekening', 'Keterangan', 'Jumlah']);
@@ -83,6 +82,7 @@ class DashboardController extends Controller
             return [
                 'title' => "Transaksi pada rekening " . $transaction->Rekening,
                 'description' => $transaction->Keterangan . " - Rp " . number_format($transaction->Jumlah, 2),
+                'date' => $transaction->Tgl,
             ];
         });
 
