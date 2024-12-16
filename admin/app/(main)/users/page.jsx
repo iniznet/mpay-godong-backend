@@ -230,6 +230,12 @@ const UserCrud = () => {
         </>
     );
 
+    const renderRole = (role) => {
+        if (role === 'admin') return <span className="p-tag p-tag-success">Admin</span>;
+        if (role === 'collector') return <span className="p-tag p-tag-info">Kolektor</span>;
+        return <span className="p-tag p-tag-warning">Tidak Diketahui</span>;
+    };
+
     return (
         <div className="grid crud-demo">
             <div className="col-12">
@@ -265,7 +271,7 @@ const UserCrud = () => {
                         <Column field="username" header="Username" sortable body={(rowData) => <span>{rowData.username}</span>} headerStyle={{ minWidth: '15rem' }}></Column>
                         <Column field="name" header="Nama" sortable body={(rowData) => <span>{rowData.name}</span>} headerStyle={{ minWidth: '15rem' }}></Column>
                         <Column field="email" header="Email" sortable body={(rowData) => <span>{rowData.email}</span>} headerStyle={{ minWidth: '15rem' }}></Column>
-                        <Column field="role" header="Peran" sortable body={(rowData) => <span>{rowData.role}</span>} headerStyle={{ minWidth: '10rem' }}></Column>
+                        <Column field="role" header="Peran" sortable body={(rowData) => renderRole(rowData.role)} headerStyle={{ minWidth: '10rem' }}></Column>
                         <Column body={actionBodyTemplate} headerStyle={{ minWidth: '10rem' }}></Column>
                     </DataTable>
 
