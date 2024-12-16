@@ -61,6 +61,7 @@ Route::middleware('auth:api')->group(function () {
     Route::post('debitur/delete-multiple', [DebiturController::class, 'destroyMultiple']);
 
     Route::get('mutasi-tabungan/next-faktur', [MutasiTabunganController::class, 'getNextFaktur']);
+    Route::get('mutasi-tabungan/kode-transaksi', [MutasiTabunganController::class, 'getKodeTransaksi']);
     Route::apiResource('mutasi-tabungan', MutasiTabunganController::class);
     Route::post('mutasi-tabungan/delete-multiple', [MutasiTabunganController::class, 'destroyMultiple']);
 

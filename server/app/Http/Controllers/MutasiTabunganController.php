@@ -89,6 +89,12 @@ class MutasiTabunganController extends Controller
         return response()->json(['faktur' => $nextFaktur]);
     }
 
+    public function getKodeTransaksi()
+    {
+        $kodeTransaksi = $this->generateKodeTransaksi();
+        return response()->json(['kode_transaksi' => $kodeTransaksi]);
+    }
+
     private function generateNextFaktur()
     {
         $date = now()->format('Ymd');
@@ -104,5 +110,14 @@ class MutasiTabunganController extends Controller
         }
 
         return $date . str_pad($newNumber, 12, '0', STR_PAD_LEFT);
+    }
+
+    private function generateKodeTransaksi()
+    {
+        do {
+            $kodeTransaksi = substr(str_shuffle('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'), 0, 3);
+        } while (MutasiTabungan::where('KodeTransaksi', $kodeTransaksi)->exists());
+
+        return $kodeTransaksi;
     }
 }

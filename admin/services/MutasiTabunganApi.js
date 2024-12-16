@@ -4,6 +4,7 @@ const MutasiTabunganApi = {
     getMutasiTabungans: (params) => Api.get('/mutasi-tabungan', { params }),
     getMutasiTabungan: (id) => Api.get(`/mutasi-tabungan/${id}`),
     getNextFaktur: () => Api.get('/mutasi-tabungan/next-faktur'),
+    getKodeTransaksi: () => Api.get('/mutasi-tabungan/kode-transaksi'),
     createMutasiTabungan: (mutasiTabunganData) => Api.post('/mutasi-tabungan', mutasiTabunganData),
     updateMutasiTabungan: (id, mutasiTabunganData) => Api.put(`/mutasi-tabungan/${id}`, mutasiTabunganData),
     deleteMutasiTabungan: (id) => Api.delete(`/mutasi-tabungan/${id}`),
