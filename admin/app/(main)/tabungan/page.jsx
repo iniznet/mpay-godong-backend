@@ -320,7 +320,7 @@ const TabunganCrud = () => {
                         <Column selectionMode="multiple" headerStyle={{ width: '4rem' }}></Column>
                         <Column field="Rekening" header="Rekening" sortable body={(rowData) => <span>{rowData.Rekening}</span>} headerStyle={{ minWidth: '15rem' }}></Column>
                         <Column field="NamaNasabah" header="Nama Nasabah" sortable body={(rowData) => <span>{rowData.NamaNasabah}</span>} headerStyle={{ minWidth: '15rem' }}></Column>
-                        <Column field="SaldoAkhir" header="Saldo Akhir" sortable body={(rowData) => <span>{rowData.SaldoAkhir.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' })}</span>} headerStyle={{ minWidth: '10rem' }}></Column>
+                        <Column field="SaldoAkhir" header="Saldo Akhir" sortable body={(rowData) => <span>{Number(rowData.SaldoAkhir).toLocaleString('id-ID', { style: 'currency', currency: 'IDR' })}</span>} headerStyle={{ minWidth: '10rem' }}></Column>
                         <Column field="StatusBlokir" header="Status Blokir" sortable body={(rowData) => <span>{rowData.StatusBlokir === '1' ? 'Diblokir' : 'Aktif'}</span>} headerStyle={{ minWidth: '10rem' }}></Column>
                         <Column body={actionBodyTemplate} headerStyle={{ minWidth: '10rem' }}></Column>
                     </DataTable>
