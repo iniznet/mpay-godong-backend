@@ -15,6 +15,7 @@ import { Toolbar } from 'primereact/toolbar';
 import AngsuranApi from '@/services/AngsuranApi';
 import DebiturApi from '@/services/DebiturApi';
 import { useUser } from '@/context/userContext';
+import { SelectButton } from 'primereact/selectbutton';
 
 const AngsuranCrud = () => {
     const { user } = useUser();
@@ -98,10 +99,9 @@ const AngsuranCrud = () => {
     };
 
     const openNew = async () => {
-        setAngsuran(initEmptyAngsuran());
 
         const response = await AngsuranApi.getNextFaktur();
-        setAngsuran({ ...angsuran, Faktur: response.data.faktur });
+        setAngsuran({ ...initEmptyAngsuran(), Faktur: response.data.faktur });
 
         setSubmitted(false);
         setAngsuranDialog(true);
@@ -388,7 +388,7 @@ const AngsuranCrud = () => {
                                 </div>
                                 <div className="field">
                                     <label htmlFor="Status">Status</label>
-                                    <InputText id="Status" value={angsuran.Status} onChange={(e) => onInputChange(e, 'Status')} maxLength={1} />
+                                    <SelectButton id="Status" value={angsuran.Status} options={[{ label: 'Dibayar', value: '1' }, { label: 'Belum Dibayar', value: '0' }]} onChange={(e) => onInputChange(e, 'Status')} />
                                 </div>
                                 <div className="field">
                                     <label htmlFor="Faktur">Faktur</label>
